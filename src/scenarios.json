@@ -1,0 +1,423 @@
+{
+  "_comment": "ECS-based scenario structure for the broker desk game",
+  "_description": "Entities are game objects, Components store data, Systems process logic",
+  
+  "entities": [
+    {
+        "id": "client_001",
+      "components": ["ClientProfile", "Clickable", "Renderable"]
+    },
+    {
+      "id": "client_002", 
+      "components": ["ClientProfile", "Clickable", "Renderable"]
+    },
+        {
+          "id": "headline_001",
+      "components": ["Clue", "Renderable"]
+    },
+    {
+      "id": "headline_002",
+      "components": ["Clue", "Renderable"] 
+        },
+        {
+          "id": "rumor_001",
+      "components": ["Clue", "Renderable"]
+    },
+    {
+      "id": "rumor_002",
+      "components": ["Clue", "Renderable"]
+        },
+        {
+          "id": "chart_001",
+      "components": ["Chart", "Renderable"]
+    },
+    {
+      "id": "chart_002",
+      "components": ["Chart", "Renderable"]
+    },
+    {
+      "id": "economic_report_001",
+      "components": ["Clue", "Renderable"]
+    },
+    {
+      "id": "desk_drawer",
+      "components": ["Hotspot", "OpensEntity"]
+        },
+        {
+          "id": "paper_stack",
+      "components": ["Hotspot", "OpensEntity"]
+        },
+        {
+          "id": "monitor",
+      "components": ["Hotspot", "OpensEntity"]
+    },
+    {
+      "id": "phone",
+      "components": ["Hotspot", "OpensEntity"]
+    },
+    {
+      "id": "filing_cabinet",
+      "components": ["Hotspot", "OpensEntity"]
+    }
+  ],
+
+  "components": {
+    "ClientProfile": {
+      "client_001": {
+        "name": "OrbisTech Enthusiast",
+        "risk_profile": "moderate",
+        "investment_amount": 5000,
+        "experience_level": "intermediate",
+        "open_statement": "I heard OrbisTech has a new product launch. Should I buy a call option?",
+        "background": "Tech industry investor with moderate risk tolerance"
+      },
+      "client_002": {
+        "name": "Conservative Retiree",
+        "risk_profile": "low", 
+        "investment_amount": 15000,
+        "experience_level": "beginner",
+        "open_statement": "I'm looking for safe investments for my retirement fund. What about some TechFlow puts?",
+        "background": "Recently retired, prioritizing capital preservation"
+      }
+    },
+    
+    "Clue": {
+      "headline_001": {
+        "type": "headline",
+        "content": "OrbisTech to unveil new flagship device in 7 days - Expected to revolutionize mobile market",
+        "reliability": "high",
+        "source": "Tech Financial Daily",
+        "impact": "very_positive",
+        "credibility_score": 0.9
+      },
+      "headline_002": {
+        "type": "headline", 
+        "content": "TechFlow reports 40% revenue drop amid supply chain issues",
+        "reliability": "high",
+        "source": "Business Wire",
+        "impact": "very_negative", 
+        "credibility_score": 0.95
+      },
+      "rumor_001": {
+        "type": "WOM",
+        "content": "My cousin works at OrbisTech and says the phone launch might be delayed due to battery issues",
+        "reliability": "low",
+        "source": "Coffee shop conversation",
+        "impact": "negative",
+        "credibility_score": 0.2
+      },
+      "rumor_002": {
+        "type": "WOM",
+        "content": "Heard from a friend that TechFlow is secretly being acquired by MegaCorp",
+        "reliability": "very_low", 
+        "source": "Social media",
+        "impact": "positive",
+        "credibility_score": 0.1
+      },
+      "economic_report_001": {
+        "type": "economic_data",
+        "content": "Federal Reserve signals potential interest rate cuts next quarter",
+        "reliability": "very_high",
+        "source": "Federal Reserve Statement", 
+        "impact": "positive",
+        "credibility_score": 1.0
+      }
+    },
+    
+    "Chart": {
+      "chart_001": {
+        "asset": "OrbisTech",
+        "trend": "bullish",
+        "duration": "7d", 
+        "volatility": "moderate",
+        "volume": "high",
+        "support_level": 145.50,
+        "resistance_level": 162.30
+      },
+      "chart_002": {
+        "asset": "TechFlow",
+        "trend": "bearish",
+        "duration": "30d",
+        "volatility": "high", 
+        "volume": "very_high",
+        "support_level": 78.20,
+        "resistance_level": 95.40
+      }
+    },
+    
+    "Hotspot": {
+      "desk_drawer": { 
+        "label": "Client Files", 
+        "x": 50, "y": 400, "w": 120, "h": 80,
+        "interactive": true,
+        "hover_text": "Check client information"
+      },
+      "paper_stack": { 
+        "label": "Documents", 
+        "x": 200, "y": 300, "w": 140, "h": 100,
+        "interactive": true,
+        "hover_text": "Browse market documents"
+      },
+      "monitor": { 
+          "label": "Market Feed",
+        "x": 500, "y": 100, "w": 300, "h": 150,
+        "interactive": true,
+        "hover_text": "View live market data"
+      },
+      "phone": {
+        "label": "Phone",
+        "x": 400, "y": 450, "w": 80, "h": 60,
+        "interactive": true,
+        "hover_text": "Check voicemails and tips"
+      },
+      "filing_cabinet": {
+        "label": "Research Files",
+        "x": 700, "y": 350, "w": 100, "h": 120, 
+        "interactive": true,
+        "hover_text": "Access historical data"
+      }
+    },
+    
+    "OpensEntity": {
+      "desk_drawer": { 
+        "target": ["client_001", "client_002"]
+      },
+      "paper_stack": { 
+        "target": ["headline_001", "headline_002", "rumor_001", "chart_001", "chart_002"]
+      },
+      "monitor": { 
+        "target": ["headline_001", "headline_002", "chart_001", "chart_002"]
+      },
+      "phone": {
+        "target": ["rumor_001", "rumor_002"]
+      },
+      "filing_cabinet": {
+        "target": ["economic_report_001", "chart_001", "chart_002"]
+      }
+    },
+    
+    "Renderable": {
+      "client_001": { 
+        "sprite": "tech-bro", 
+        "layer": "popup",
+        "scale": 1.0,
+        "alpha": 1.0
+      },
+      "client_002": {
+        "sprite": "client_retiree.png",
+        "layer": "popup", 
+        "scale": 1.0,
+        "alpha": 1.0
+      },
+      "headline_001": { 
+        "sprite": "headline_paper.png", 
+        "layer": "popup",
+        "scale": 0.8,
+        "alpha": 1.0
+      },
+      "headline_002": {
+        "sprite": "headline_paper.png",
+        "layer": "popup",
+        "scale": 0.8, 
+        "alpha": 1.0
+      },
+      "rumor_001": { 
+        "sprite": "rumor_note.png", 
+        "layer": "popup",
+        "scale": 0.9,
+        "alpha": 0.9
+      },
+      "rumor_002": {
+        "sprite": "rumor_note.png",
+        "layer": "popup",
+        "scale": 0.9,
+        "alpha": 0.9
+      },
+      "chart_001": { 
+        "sprite": "chart_slip.png", 
+        "layer": "popup",
+        "scale": 1.0,
+        "alpha": 1.0
+      },
+      "chart_002": {
+        "sprite": "chart_slip.png",
+        "layer": "popup",
+        "scale": 1.0,
+        "alpha": 1.0
+      },
+      "economic_report_001": {
+        "sprite": "economic_report.png",
+        "layer": "popup",
+        "scale": 0.85,
+        "alpha": 1.0
+      }
+    },
+    
+    "Clickable": {
+      "client_001": { 
+        "action": "open_profile",
+        "cursor": "pointer"
+      },
+      "client_002": {
+        "action": "open_profile", 
+        "cursor": "pointer"
+      }
+    }
+  },
+
+  "scenarios": [
+    {
+      "id": "easy_001",
+      "title": "The Product Launch",
+      "difficulty": "easy",
+      "description": "Help an OrbisTech enthusiast decide on a call option before a major product launch",
+      "entities": ["client_001", "headline_001", "rumor_001", "chart_001"],
+      "hotspots": ["desk_drawer", "paper_stack", "monitor"],
+      "win_condition": "approve_call",
+      "time_limit": 300,
+      "difficulty_modifiers": {
+        "clue_reliability_bonus": 0.1,
+        "false_information_penalty": 0.0
+      }
+    },
+    {
+      "id": "medium_001", 
+      "title": "The Conservative Dilemma",
+      "difficulty": "medium",
+      "description": "A risk-averse retiree wants to invest in puts, but conflicting information makes the decision complex",
+      "entities": ["client_002", "headline_002", "rumor_002", "chart_002", "economic_report_001"],
+      "hotspots": ["desk_drawer", "paper_stack", "monitor", "phone", "filing_cabinet"],
+      "win_condition": "approve_put",
+      "time_limit": 420,
+      "difficulty_modifiers": {
+        "clue_reliability_bonus": 0.0,
+        "false_information_penalty": 0.15
+      }
+    },
+    {
+      "id": "hard_001",
+      "title": "Mixed Signals",
+      "difficulty": "hard", 
+      "description": "Multiple clients and contradictory market data create a complex decision matrix",
+      "entities": ["client_001", "client_002", "headline_001", "headline_002", "rumor_001", "rumor_002", "chart_001", "chart_002", "economic_report_001"],
+      "hotspots": ["desk_drawer", "paper_stack", "monitor", "phone", "filing_cabinet"],
+      "win_condition": "optimal_portfolio",
+      "time_limit": 600,
+      "difficulty_modifiers": {
+        "clue_reliability_bonus": -0.1,
+        "false_information_penalty": 0.25
+      }
+    },
+    {
+      "id": "tutorial_001",
+      "title": "First Day on the Job",
+      "difficulty": "tutorial",
+      "description": "Learn the basics of evaluating market information and client needs",
+      "entities": ["client_001", "headline_001", "chart_001"],
+      "hotspots": ["desk_drawer", "monitor"],
+      "win_condition": "approve_call",
+      "time_limit": 180,
+      "tutorial_hints": [
+        "Click on Client Files to see your client's profile",
+        "Check the Market Feed for current data", 
+        "Match client risk tolerance with market conditions"
+      ],
+      "difficulty_modifiers": {
+        "clue_reliability_bonus": 0.2,
+        "false_information_penalty": 0.0
+      }
+    },
+    {
+      "id": "expert_001",
+      "title": "Market Crash Scenario",
+      "difficulty": "expert",
+      "description": "Navigate through a volatile market crash with panicking clients and conflicting data",
+      "entities": ["client_001", "client_002", "headline_001", "headline_002", "rumor_001", "rumor_002", "chart_001", "chart_002", "economic_report_001"],
+      "hotspots": ["desk_drawer", "paper_stack", "monitor", "phone", "filing_cabinet"],
+      "win_condition": "crisis_management",
+      "time_limit": 480,
+      "crisis_events": [
+        {"time": 120, "event": "Market drops 15%", "effect": "increased_volatility"},
+        {"time": 240, "event": "Client panic calls", "effect": "pressure_decision"},
+        {"time": 360, "event": "Breaking news alert", "effect": "new_information"}
+      ],
+      "difficulty_modifiers": {
+        "clue_reliability_bonus": -0.2,
+        "false_information_penalty": 0.4,
+        "time_pressure_multiplier": 1.5
+      }
+    }
+  ],
+
+  "win_conditions": {
+    "approve_call": {
+      "description": "Approve call option based on positive market signals",
+      "required_analysis": ["client_risk_assessment", "market_trend_analysis", "news_credibility_check"],
+      "success_criteria": "High confidence in bullish outcome with appropriate risk level",
+      "scoring": {
+        "perfect_score": 100,
+        "good_analysis": 80,
+        "acceptable": 60,
+        "poor_decision": 30
+      }
+    },
+    "approve_put": {
+      "description": "Approve put option based on negative market signals", 
+      "required_analysis": ["client_risk_assessment", "market_trend_analysis", "news_credibility_check"],
+      "success_criteria": "High confidence in bearish outcome with appropriate risk level",
+      "scoring": {
+        "perfect_score": 100,
+        "good_analysis": 80,
+        "acceptable": 60,
+        "poor_decision": 30
+      }
+    },
+    "optimal_portfolio": {
+      "description": "Create balanced recommendations for multiple clients",
+      "required_analysis": ["multi_client_assessment", "diversification_strategy", "risk_balancing"],
+      "success_criteria": "Appropriate risk-adjusted recommendations for each client profile",
+      "scoring": {
+        "perfect_score": 100,
+        "good_analysis": 85,
+        "acceptable": 70,
+        "poor_decision": 40
+      }
+    },
+    "crisis_management": {
+      "description": "Successfully navigate market crisis while protecting client interests",
+      "required_analysis": ["crisis_assessment", "risk_mitigation", "client_communication", "damage_control"],
+      "success_criteria": "Minimize client losses while maintaining trust and regulatory compliance",
+      "scoring": {
+        "perfect_score": 100,
+        "crisis_averted": 90,
+        "damage_limited": 75,
+        "losses_minimized": 60,
+        "major_losses": 20
+      }
+    }
+  },
+
+  "meta": {
+    "version": "2.0.0",
+    "ecs_architecture": true,
+    "last_updated": "2025-09-12",
+    "supported_systems": [
+      "RenderSystem",
+      "ClickSystem", 
+      "HotspotSystem",
+      "ClientAnalysisSystem",
+      "DecisionValidationSystem",
+      "ScoringSystem",
+      "TutorialSystem",
+      "CrisisEventSystem"
+    ],
+    "asset_requirements": [
+      "client_tech_enthusiast.png",
+      "client_retiree.png", 
+      "headline_paper.png",
+      "rumor_note.png",
+      "chart_slip.png",
+      "economic_report.png"
+    ]
+  }
+}

@@ -27,13 +27,16 @@ export class MainMenu extends Scene
 
     changeScene ()
     {
+        console.log('MainMenu changeScene() called - attempting to start BrokerDesk');
+        
         if (this.logoTween)
         {
             this.logoTween.stop();
             this.logoTween = null;
         }
 
-        this.scene.start('Game');
+        console.log('Starting BrokerDesk scene...');
+        this.scene.start('BrokerDesk');
     }
 
     moveLogo (reactCallback)

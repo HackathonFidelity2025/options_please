@@ -35,6 +35,22 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('star', 'star.png');
         this.load.image('tech-bro', 'tech-bro.png');
+        
+        // Load broker desk backgrounds
+        this.load.image('background3', 'op-bg-3.png');
+        this.load.image('background2', 'op-bg-2.png');
+        
+        // Load scenarios data
+        this.load.json('scenarios', '../src/scenarios.json');
+        
+        // Load sprites for game entities (keys must match scenario.json sprite references)
+        this.load.image('tech-bro', 'tech-bro.png'); // Direct key mapping for client_001
+        this.load.image('client_tech_enthusiast', 'tech-bro.png'); // Legacy key
+        this.load.image('client_retiree', 'tech-bro.png'); // Using existing as placeholder
+        this.load.image('headline_paper', 'bg.png'); // Using existing as placeholder
+        this.load.image('rumor_note', 'bg.png'); // Using existing as placeholder
+        this.load.image('chart_slip', 'bg.png'); // Using existing as placeholder
+        this.load.image('economic_report', 'bg.png'); // Using existing as placeholder
     }
 
     create ()
