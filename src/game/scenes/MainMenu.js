@@ -16,11 +16,23 @@ export class MainMenu extends Scene
 
         this.logo = this.add.image(512, 300, 'logo').setDepth(100);
 
-        this.add.text(512, 460, 'Main Menu', {
+        this.add.text(512, 460, 'Options Trading Game', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);
+        
+        // Add start button
+        const startButton = this.add.rectangle(512, 550, 200, 60, 0x00ff00);
+        startButton.setInteractive();
+        startButton.on('pointerdown', () => this.changeScene());
+        startButton.setDepth(100);
+        
+        const startButtonText = this.add.text(512, 550, 'Start Game', {
+            fontFamily: 'Arial', fontSize: 24, color: '#000000',
+            stroke: '#ffffff', strokeThickness: 2,
+            align: 'center'
+        }).setDepth(101).setOrigin(0.5);
         
         EventBus.emit('current-scene-ready', this);
     }
