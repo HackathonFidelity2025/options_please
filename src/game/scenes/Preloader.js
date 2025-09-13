@@ -51,6 +51,10 @@ export class Preloader extends Scene
         // Load scenario data
         this.load.json('scenarios', 'scenarios.json');
 
+        // Load all clue assets
+        this.load.image('newspaper', 'newspaper-sprite.png');
+
+
         // Load all client voices
         // this.load.audio('tech-bro', 'tech-bro.mp3');
         // this.load.audio('man', 'man.mp3');

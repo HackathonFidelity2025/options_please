@@ -1,9 +1,15 @@
+@font-face {
+    font-family: 'Minecraft';
+    src: url('./assets/fonts/Minecraft.ttf') format('truetype');
+    font-display: swap;
+}
+
 body {
     margin: 0;
     padding: 0;
     color: rgba(255, 255, 255, 0.87);
     background-color: #000000; 
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Minecraft', Arial, Helvetica, sans-serif;
 }
 
 #app {
@@ -61,4 +67,16 @@ body {
         border: 1px solid rgba(255, 255, 255, 0.3);
         color: rgba(255, 255, 255, 0.3);
     }
+}
+
+/* Minecraft font utility class */
+.minecraft-font {
+    font-family: 'Minecraft', 'Courier New', monospace;
+}
+
+.minecraft-text {
+    font-family: 'Minecraft', 'Courier New', monospace;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
 }

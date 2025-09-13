@@ -30,7 +30,7 @@ export class MainMenu extends Scene
         this.logo = this.add.image(512, 300, 'logo').setDepth(100);
 
         this.add.text(512, 460, 'Options Trading Game', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
+            fontFamily: 'Minecraft', fontSize: 38, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);
@@ -42,7 +42,7 @@ export class MainMenu extends Scene
         startButton.setDepth(100);
         
         const startButtonText = this.add.text(512, 550, 'Start Game', {
-            fontFamily: 'Arial', fontSize: 24, color: '#000000',
+            fontFamily: 'Minecraft', fontSize: 24, color: '#000000',
             stroke: '#ffffff', strokeThickness: 2,
             align: 'center'
         }).setDepth(101).setOrigin(0.5);

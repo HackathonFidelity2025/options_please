@@ -65,7 +65,7 @@ export class Game extends Scene
         const label = this.add.text(labelX, labelY, labelText, { 
             fontSize: '20px', // Increased font size
             color: '#ffffff',
-            fontFamily: 'Courier New, monospace' // Monospace font for retro feel
+            fontFamily: 'Minecraft, Courier New, monospace' // Monospace font for retro feel
         }).setDepth(15);
         label.setOrigin(0.5, 0.5); // Center the text origin
         label.setAlpha(0); // Start hidden
@@ -126,7 +126,7 @@ export class Game extends Scene
         const label = this.add.text(labelX, labelY, labelText, { 
             fontSize: '20px',
             color: '#ffffff',
-            fontFamily: 'Courier New, monospace'
+            fontFamily: 'Minecraft, Courier New, monospace'
         }).setDepth(200);
         label.setAlpha(0); // Start hidden
         
@@ -179,6 +179,7 @@ export class Game extends Scene
         // Day counter
         this.dayText = this.add.text(50, 50, `Day ${this.gameState.currentDay}`, {
             fontSize: '24px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -188,6 +189,7 @@ export class Game extends Scene
         // Reputation score
         this.reputationText = this.add.text(50, 80, `Reputation: ${this.gameState.reputationScore}`, {
             fontSize: '20px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -197,6 +199,7 @@ export class Game extends Scene
         // Client counter
         this.clientText = this.add.text(50, 110, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -232,6 +235,7 @@ export class Game extends Scene
         // Add "?" text
         this.guidebookText = this.add.text(buttonX, buttonY, '?', {
             fontSize: '32px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -357,6 +361,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Content
         const contentText = this.add.text(512, modalY + 120, currentPage.content, {
             fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1,
@@ -378,6 +383,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const closeButtonText = this.add.text(512, modalY + 420, 'Close', {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
@@ -407,6 +413,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const prevButtonText = this.add.text(modalX + 100, buttonY, 'Previous', {
             fontSize: '14px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
@@ -416,6 +423,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Page indicator
         const pageIndicator = this.add.text(512, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
             fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
@@ -430,6 +438,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const nextButtonText = this.add.text(modalX + modalWidth - 100, buttonY, 'Next', {
             fontSize: '14px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
@@ -539,6 +548,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Day start text
         const dayStartText = this.add.text(512, modalY + 80, `Day ${this.gameState.currentDay}`, {
             fontSize: '32px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -547,6 +557,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const instructionText = this.add.text(512, modalY + 140, 'Ready to start trading?', {
             fontSize: '20px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -561,6 +572,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const startButtonText = this.add.text(512, modalY + 200, 'Start Day', {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
             stroke: '#ffffff',
             strokeThickness: 1
@@ -665,7 +677,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Add text
         this.bubbleText = this.add.text(bubbleX, bubbleY, text, {
-            fontFamily: 'Arial',
+            fontFamily: 'Minecraft, Courier New, monospace',
             fontSize: '16px',
             color: 'white',
             align: 'center',
@@ -736,9 +748,136 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     showNewspaperClue() {
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'newspaper');
         if (clue) {
-            this.showClueModal('Newspaper Headlines', clue);
+            this.showNewspaperModal(clue);
             this.sound.play('paper-turn', { volume: 1 });
         }
+    }
+
+    showNewspaperModal(clue) {
+        // Create newspaper modal container
+        const modal = this.add.container(0, 0);
+        modal.setDepth(150);
+        
+        // Modal background - make interactive to block clicks
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.8);
+        modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        modal.add(modalBg);
+        
+        // Display the newspaper sprite centered
+        const newspaperSprite = this.add.image(512, 384, 'newspaper');
+        newspaperSprite.setScale(0.6); // Scale to fit nicely in modal
+        modal.add(newspaperSprite);
+        
+        // Extract headline from clue (assume first line or sentence is the headline)
+        const headlineText = this.extractHeadline(clue);
+        
+        // Create pixelated headline text overlay
+        const headline = this.add.text(512, 280, headlineText, {
+            fontFamily: '"Minecraft", "Courier New", monospace', // More pixelated fonts
+            fontSize: '38px',
+            color: '#000000', // Black text for newspaper
+            fontStyle: 'bold',
+            align: 'center',
+            wordWrap: { width: 380 },
+            // shadow: {
+            //     offsetX: 2,
+            //     offsetY: 2,
+            //     color: '#666666',
+            //     blur: 0,
+            //     stroke: false,
+            //     fill: true
+            // },
+            // CSS-style properties for more pixelated look
+            resolution: 1, // Lower resolution for more pixelated effect
+        }).setOrigin(0.5, 0.25);
+        modal.add(headline);
+        
+        // Add subtitle text if clue has more content
+        const subtitleText = this.extractSubtitle(clue);
+        if (subtitleText) {
+            const subtitle = this.add.text(512, 320, subtitleText, {
+                fontFamily: '"Minecraft", "Courier New", monospace',
+                fontSize: '16px',
+                color: '#444444',
+                align: 'center',
+                wordWrap: { width: 350 },
+                shadow: {
+                    offsetX: 1,
+                    offsetY: 1,
+                    color: '#888888',
+                    blur: 0,
+                    stroke: false,
+                    fill: true
+                },
+                resolution: 1, // Lower resolution for pixelated effect
+            }).setOrigin(0.5, 0.25);
+            modal.add(subtitle);
+        }
+        
+        // Close button positioned below the newspaper
+        const closeButton = this.add.rectangle(512, 600, 120, 40, 0x8B4513);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            modal.destroy();
+        });
+        modal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, 600, 'Close', {
+            fontSize: '18px',
+            color: '#ffffff',
+            fontFamily: '"Minecraft", "Courier New", monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1, // Lower resolution for pixelated effect
+        }).setOrigin(0.5);
+        modal.add(closeButtonText);
+        
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D);
+        });
+        
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513);
+        });
+    }
+    
+    extractHeadline(clueText) {
+        // Extract the first line or sentence as headline
+        const lines = clueText.split('\n');
+        const firstLine = lines[0] || clueText;
+        
+        // If it's a long sentence, take first part up to first period or limit characters
+        if (firstLine.length > 60) {
+            const sentenceEnd = firstLine.indexOf('.');
+            if (sentenceEnd > 0 && sentenceEnd < 60) {
+                return firstLine.substring(0, sentenceEnd + 1).toUpperCase();
+            } else {
+                return firstLine.substring(0, 60).toUpperCase() + '...';
+            }
+        }
+        
+        return firstLine.toUpperCase();
+    }
+    
+    extractSubtitle(clueText) {
+        // Extract remaining text as subtitle
+        const lines = clueText.split('\n');
+        if (lines.length > 1) {
+            return lines.slice(1).join('\n').substring(0, 200);
+        }
+        
+        // If it's one long line, take the part after the headline
+        const firstLine = lines[0] || clueText;
+        if (firstLine.length > 60) {
+            const remaining = firstLine.substring(60);
+            return remaining.length > 200 ? remaining.substring(0, 200) + '...' : remaining;
+        }
+        
+        return null;
     }
 
     showClueModal(title, content) {
@@ -769,6 +908,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Title
         const titleText = this.add.text(512, modalY + 40, title, {
             fontSize: '24px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -778,6 +918,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Content
         const contentText = this.add.text(512, modalY + 100, content, {
             fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1,
@@ -797,6 +938,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const closeButtonText = this.add.text(512, modalY + 320, 'Close', {
             fontSize: '18px',
             color: '#ffffff',
+            fontFamily: 'Minecraft, Courier New, monospace',
             stroke: '#000000',
             strokeThickness: 1
         }).setOrigin(0.5);
@@ -840,6 +982,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Title
         const titleText = this.add.text(512, modalY + 60, 'Make Your Decision', {
             fontSize: '24px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
@@ -857,6 +1000,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const callButtonText = this.add.text(modalX + 100, buttonY, 'Call', {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
             stroke: '#ffffff',
             strokeThickness: 1
@@ -871,6 +1015,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const putButtonText = this.add.text(modalX + 250, buttonY, 'Put', {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
@@ -885,6 +1030,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const holdButtonText = this.add.text(modalX + 400, buttonY, 'Hold', {
             fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
             stroke: '#000000',
             strokeThickness: 1
@@ -901,6 +1047,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         
         const closeButtonText = this.add.text(512, modalY + 220, 'Close', {
             fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 1
