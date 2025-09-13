@@ -333,12 +333,6 @@ While these tips can help inform your decisions, be mindful of their reliability
             {
                 title: "Evaluating Evidence",
                 content: `Your professional reputation is a direct reflection of the quality of the guidance you provide. Every recommendation you make—whether it results in a profit, a loss, or missed opportunity—impacts how clients, colleagues, and regulators perceive your advisory practice.           
-• Positive Reputation
-Consistently accurate and thoughtful advice builds trust with clients. A strong reputation attracts more business, unlocks higher-value clients, and establishes you as a reliable financial advisor.
-• Neutral Reputation
-Safe or indecisive recommendations may keep you out of trouble in the short term, but over time, clients may lose confidence in your ability to provide meaningful insights.
-• Negative Reputation
-Poor or reckless recommendations will damage client trust, reduce future business opportunities, and may draw increased scrutiny from regulators. In extreme cases, a severely damaged reputation could jeopardize your career entirely.
 
 Key Insight: Reputation is not built overnight. Each client interaction contributes to your long-term standing. Protect it carefully, as it is the most valuable asset in your advisory career.
 `
@@ -766,9 +760,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     showComputerClue() {
-        // Randomly show either chart or graph
-        const clueType = Math.random() < 0.5 ? 'charts' : 'graphs';
-        const clue = this.scenarioManager.getClueByCategory(this.currentClient, clueType);
+
+        const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
         if (clue) {
             this.showClueModal(clue.title, this.formatChartData(clue));
         }

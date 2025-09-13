@@ -59,36 +59,22 @@
   ],
   "scenarios": [
     {
-      "id": "tech_startup_ipo",
+      "id": "gpu_makers_chip_adoption",
       "client": "tech_bro",
-      "name": "TechCorp IPO",
-      "description": "A hot new tech startup is going public",
-      "openingStatement": "Hey! I've got some insider info about TechCorp's upcoming IPO. This could be huge!",
+      "name": "Graphics Makers Inc. Chip Adoption",
+      "description": "Graphics Makers Inc. is selling more chips than expected.",
+      "openingStatement": "I’ve been watching GPU Makers Inc. closely. Their graphics chips are everywhere in gaming and AI. What do you think of their stock?",
       "clues": {
-        "wordOfMouth": [
-          "My buddy at the company says they're crushing their Q4 numbers",
-          "Rumor has it they're about to announce a major partnership",
-          "The CEO was spotted at Goldman Sachs last week - big deal coming!"
-        ],
+        "wordOfMouth": [],
         "newspaper": [
-          "TechCorp Reports Record Revenue Growth in Q4",
-          "Industry Analysts Predict Strong IPO Performance",
-          "TechCorp CEO: 'We're Just Getting Started'"
+          "GPU Makers Inc. earnings report 3x higher than expected."
         ],
         "charts": [
           {
             "type": "revenue",
             "data": [100, 120, 150, 180, 220],
             "labels": ["Q1", "Q2", "Q3", "Q4", "Projected"],
-            "title": "TechCorp Revenue Growth"
-          }
-        ],
-        "graphs": [
-          {
-            "type": "trend",
-            "data": [45, 52, 48, 61, 67, 72, 78],
-            "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Mon", "Tue"],
-            "title": "TechCorp Stock Price Trend (Pre-IPO)"
+            "title": "Graphics Makers Inc. Revenue Growth"
           }
         ]
       },
@@ -96,121 +82,88 @@
         "call": {
           "success": true,
           "reputationChange": 15,
-          "message": "Great call! TechCorp's IPO was a huge success and the stock soared!"
+          "message": "Great call! The adoption of their new graphics chips has been a huge success!"
         },
         "put": {
           "success": false,
           "reputationChange": -10,
-          "message": "Ouch! TechCorp's IPO exceeded expectations. You missed out on big gains."
+          "message": "Ouch! Graphics Makers Inc. exceeded expectations. You missed out on big gains."
         },
         "hold": {
           "success": true,
           "reputationChange": 0,
-          "message": "Smart to wait and see. TechCorp did well, but you avoided the risk."
+          "message": "Smart to wait and see. Graphics Makers Inc. did well, but you avoided the risk."
         }
       }
     },
     {
-      "id": "pharma_trial_results",
+      "id": "terrafuel_regulations",
       "client": "man",
-      "name": "MediPharm Clinical Trial",
-      "description": "A pharmaceutical company's drug trial results are about to be released",
-      "openingStatement": "I heard some concerning things about MediPharm's latest drug trial. This could go either way.",
+      "name": "Terrafuel Regulations",
+      "description": "TerraFuel Corp. is facing new regulations.",
+      "openingStatement": "TerraFuel Corp. has been on my radar. But I heard some news about regulations…",
       "clues": {
-        "wordOfMouth": [
-          "My friend in the lab says the trial data looks questionable",
-          "There are whispers about side effects in the test group",
-          "The FDA meeting got postponed - never a good sign"
-        ],
+        "wordOfMouth": [],
         "newspaper": [
-          "MediPharm Trial Results Delayed by FDA",
-          "Concerns Raised Over Drug Safety Profile",
-          "MediPharm Stock Drops on Trial Uncertainty"
+          "Congress passes sweeping fossil fuel regulations."
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [200, 195, 190, 185, 180],
-            "labels": ["Q1", "Q2", "Q3", "Q4", "Projected"],
-            "title": "MediPharm Revenue Decline"
-          }
-        ],
-        "graphs": [
-          {
-            "type": "trend",
-            "data": [85, 82, 78, 75, 72, 68, 65],
-            "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Mon", "Tue"],
-            "title": "MediPharm Stock Price Decline"
-          }
-        ]
+          "type": "trend",
+          "data": [85, 82, 78, 75, 68, 63, 50],
+          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Mon", "Tue"],
+          "title": "TerraFuel Corp. Stock Price Decline"
+        }
+      ]
       },
       "outcomes": {
         "call": {
           "success": false,
           "reputationChange": -15,
-          "message": "Bad timing! MediPharm's trial results were disappointing and the stock tanked."
+          "message": "Bad timing! TerraFuel Corp. stock tanked due to the regulations."
         },
         "put": {
           "success": true,
           "reputationChange": 20,
-          "message": "Excellent foresight! MediPharm's trial failed and you made a killing on the put!"
+          "message": "Excellent foresight! TerraFuel Corp. stock plummeted and you made a killing on the put!"
         },
         "hold": {
           "success": true,
-          "reputationChange": 5,
-          "message": "Wise decision to stay out. MediPharm's troubles would have hurt your portfolio."
+          "reputationChange": -5,
+          "message": "Wise decision to stay out. TerraFuel Corp. stock has been plummeting, but you could have predicted it and made a profit."
         }
       }
     },
     {
-      "id": "energy_merger",
+      "id": "frosty_treats",
       "client": "woman",
-      "name": "EnergyCorp Merger",
-      "description": "Two energy companies are rumored to be merging",
-      "openingStatement": "Big news in the energy sector! EnergyCorp and PowerMax might be joining forces.",
+      "name": "Frosty Treats Can't Meet Demand",
+      "description": "Cocoa shortage faces Frosty Treats.",
+      "openingStatement": "Everyone I know is crazy about Frosty Treats’ quadruple chocolate deluxe. I want to invest before summer hits.",
       "clues": {
         "wordOfMouth": [
-          "The merger talks have been going on for months",
-          "Both companies' boards are meeting this week",
-          "My source says the deal is 90% done"
+          "All my friends go to Frosty Treats for that chocolate dessert."
         ],
         "newspaper": [
-          "EnergyCorp and PowerMax in Advanced Merger Talks",
-          "Merger Could Create Energy Sector Giant",
-          "Regulatory Approval Expected Within 60 Days"
+          "Global cocoa shortage sends chocolate prices skyrocketing."
         ],
-        "charts": [
-          {
-            "type": "revenue",
-            "data": [150, 155, 160, 165, 170],
-            "labels": ["Q1", "Q2", "Q3", "Q4", "Projected"],
-            "title": "Combined Company Revenue Projection"
-          }
-        ],
-        "graphs": [
-          {
-            "type": "trend",
-            "data": [55, 58, 62, 65, 68, 70, 72],
-            "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Mon", "Tue"],
-            "title": "EnergyCorp Stock Price Rise"
-          }
-        ]
+        "charts": []
       },
       "outcomes": {
         "call": {
-          "success": true,
-          "reputationChange": 12,
-          "message": "Nice work! The merger was announced and both stocks jumped significantly!"
+          "success": false,
+          "reputationChange": -12,
+          "message": "Wrong call! The cocoa shortage sent Frosty Treats stock plummeting."
         },
         "put": {
-          "success": false,
-          "reputationChange": -8,
-          "message": "Wrong direction! The merger announcement sent stocks soaring, not falling."
+          "success": true,
+          "reputationChange": 8,
+          "message": "Nice choice! The cocoa shortage made it impossible for Frosty Treats to meet demand."
         },
         "hold": {
           "success": true,
           "reputationChange": 2,
-          "message": "Conservative play. The merger went through but you avoided the volatility."
+          "message": "Conservative play. The cocoa shortage made it impossible for Frosty Treats to meet demand."
         }
       }
     }
