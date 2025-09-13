@@ -4,6 +4,7 @@
       "id": "tech_bro",
       "name": "Tech Bro",
       "description": "A tech bro who is interested in investing in a tech startup",
+      "riskFactor": 5,
       "avatar": "tech-bro.png",
       "voice": "tech-bro.mp3"
     },
@@ -11,6 +12,7 @@
       "id": "man",
       "name": "Man",
       "description": "A man who is interested in investing in a tech startup",
+      "riskFactor": 5,
       "avatar": "man.png",
       "voice": "man.mp3"
     },
@@ -18,6 +20,7 @@
       "id": "woman",
       "name": "Woman",
       "description": "A woman who is interested in investing in a tech startup",
+      "riskFactor": 4,
       "avatar": "woman.png",
       "voice": "woman.mp3"
     },
@@ -25,6 +28,7 @@
       "id": "young_woman",
       "name": "Young Woman",
       "description": "A young woman who is interested in investing in a tech startup",
+      "riskFactor": 4,
       "avatar": "young-woman.png",
       "voice": "young-woman.mp3"
     },
@@ -32,6 +36,7 @@
       "id": "young_man",
       "name": "Young Man",
       "description": "A young man who is interested in investing in a tech startup",
+      "riskFactor": 4,
       "avatar": "young-man.png",
       "voice": "young-man.mp3"
     },
@@ -39,6 +44,7 @@
       "id": "old_man",
       "name": "Old Man",
       "description": "An old man who is interested in investing in a tech startup",
+      "riskFactor": 5,
       "avatar": "old-man.png",
       "voice": "old-man.mp3"
     },
@@ -46,6 +52,7 @@
       "id": "sad_businessman",
       "name": "Sad Businessman",
       "description": "A sad businessman who is interested in investing in a tech startup",
+      "riskFactor": 5,
       "avatar": "sad-businessman.png",
       "voice": "sad-businessman.mp3"
     },
@@ -53,6 +60,7 @@
       "id": "shopkeeper",
       "name": "Shopkeeper",
       "description": "A shopkeeper who is interested in investing in a tech startup",
+      "riskFactor": 5,
       "avatar": "shopkeeper.png",
       "voice": "shopkeeper.mp3"
     }
@@ -63,32 +71,17 @@
       "client": "tech_bro",
       "name": "Graphics Makers Inc. Chip Adoption",
       "description": "Graphics Makers Inc. is selling more chips than expected.",
-      "openingStatement": "I’ve been watching GPU Makers Inc. closely. Their graphics chips are everywhere in gaming and AI. What do you think of their stock?",
+      "riskFactor": 3,
+      "openingStatement": "I've been watching GPU Makers Inc. closely. Their graphics chips are everywhere in gaming and AI. What do you think of their stock?",
       "clues": {
-        "wordOfMouth": [],
+        "wordOfMouth": ["testing word out mouth. remove later"],
         "newspaper": [
           "GPU Makers Inc. earnings report 3x higher than expected."
         ],
-        "charts": [
-          {
-            "type": "revenue",
-            "data": [
-              100,
-              120,
-              150,
-              180,
-              220
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
-            "title": "Graphics Makers Inc. Revenue Growth"
-          }
-        ]
+        "charts": {
+          "type": "graph-up",
+          "title": "Graphics Makers Quarterly Revenue"
+        }
       },
       "outcomes": {
         "call": {
@@ -113,6 +106,7 @@
       "client": "man",
       "name": "Terrafuel Regulations",
       "description": "TerraFuel Corp. is facing new regulations.",
+      "riskFactor": 8,
       "openingStatement": "TerraFuel Corp. has been on my radar. But I heard some news about regulations…",
       "clues": {
         "wordOfMouth": [],
@@ -121,25 +115,7 @@
         ],
         "charts": [
           {
-            "type": "trend",
-            "data": [
-              85,
-              82,
-              78,
-              75,
-              68,
-              63,
-              50
-            ],
-            "labels": [
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-              "Mon",
-              "Tue"
-            ],
+            "type": "graph-down",
             "title": "TerraFuel Corp. Stock Price Decline"
           }
         ]
@@ -210,22 +186,8 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              100,
-              120,
-              150,
-              180,
-              220
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
-            "title": "CodeLogic Revenue Growth"
+            "type": "pie-green",
+            "title": "Codelogic Job Losses"
           }
         ]
       },
@@ -285,7 +247,8 @@
       "client": "young-woman",
       "name": "NovaTech Accounting Scandal",
       "description": "NovatTech has been lying about their profits",
-      "openingStatement": "NovaTech’s been in trouble for scandals. But they just announced major growth. What do I do?",
+      "riskFactor": 9,
+      "openingStatement": "NovaTech's been in trouble for scandals. But they just announced major growth. What do I do?",
       "clues": {
         "wordOfMouth": [
           "Didn’t NovaTech just get caught fudging profits?"
@@ -295,21 +258,7 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              345,
-              300,
-              112,
-              158,
-              190
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
+            "type": "graph-down",
             "title": "NovaTech Revenue Growth"
           }
         ]
@@ -347,21 +296,7 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              90,
-              115,
-              128,
-              140,
-              168
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
+            "type": "graph-up",
             "title": "AgriTech Steady Revenue Growth"
           }
         ]
@@ -397,30 +332,7 @@
         "newspaper": [
           "Zenith earnings slightly above expectations."
         ],
-        "charts": [
-          {
-            "type": "trend",
-            "data": [
-              45,
-              68,
-              20,
-              10,
-              30,
-              32,
-              40
-            ],
-            "labels": [
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-              "Mon",
-              "Tue"
-            ],
-            "title": "Zenith Corp. Stock Price fluctuations "
-          }
-        ]
+        "charts": []
       },
       "outcomes": {
         "call": {

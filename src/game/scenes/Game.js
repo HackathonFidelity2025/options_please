@@ -91,6 +91,26 @@ export class Game extends Scene {
             this.paperLayers.push(layer);
         }
         
+        // Create computer animation layers - all positioned at the same location
+        this.computerLayers = [];
+        for (let i = 1; i <= 4; i++) {
+            const layer = this.add.image(512, 384, `computer${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.computerLayers.push(layer);
+        }
+        
+        // Create binders animation layers - all positioned at the same location
+        this.bindersLayers = [];
+        for (let i = 1; i <= 1; i++) {
+            const layer = this.add.image(512, 384, `binders${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.bindersLayers.push(layer);
+        }
+        
         // Store animation state
         this.keyboardAnimating = false;
         this.keyboardAnimationFrame = 0;
@@ -98,6 +118,11 @@ export class Game extends Scene {
         this.phoneAnimationFrame = 0;
         this.paperAnimating = false;
         this.paperAnimationFrame = 0;
+        this.computerAnimating = false;
+        this.computerAnimationFrame = 0;
+        this.bindersAnimating = false;
+        this.bindersAnimationFrame = 0;
+        this.bindersFrameDuration = 0;
     }
 
     animateKeyboard() {
@@ -165,8 +190,8 @@ export class Game extends Scene {
                 
                 this.phoneFrameDuration++;
                 
-                // If we've shown this frame for 2 cycles, move to next frame
-                if (this.phoneFrameDuration >= 2) {
+                // If we've shown this frame for 3 cycles, move to next frame
+                if (this.phoneFrameDuration >= 3) {
                     this.phoneAnimationFrame++;
                     this.phoneFrameDuration = 0;
                 }
@@ -223,6 +248,102 @@ export class Game extends Scene {
                 // Animation complete - hide all layers
                 this.paperLayers.forEach(layer => layer.setAlpha(0));
                 this.paperAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animateComputer() {
+        if (this.computerAnimating) return; // Prevent overlapping animations
+        
+        this.computerAnimating = true;
+        this.computerAnimationFrame = 0;
+        this.computerFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.computerLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.computerAnimationFrame < this.computerLayers.length) {
+                // Show current frame
+                this.computerLayers[this.computerAnimationFrame].setAlpha(1);
+                
+                // Hide previous frame (except for first frame)
+                if (this.computerAnimationFrame > 0) {
+                    this.computerLayers[this.computerAnimationFrame - 1].setAlpha(0);
+                }
+                
+                this.computerFrameDuration++;
+                
+                // If we've shown this frame for 2 cycles, move to next frame
+                if (this.computerFrameDuration >= 2) {
+                    this.computerAnimationFrame++;
+                    this.computerFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a short delay
+                this.time.delayedCall(100, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.computerLayers.forEach(layer => layer.setAlpha(0));
+                this.computerAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    hover_call() {
+        // Simply show the binders1 frame while hovering
+        this.bindersLayers.forEach(layer => layer.setAlpha(0));
+        this.bindersLayers[0].setAlpha(1); // Show binders1
+    }
+
+    animateBindersLong() {
+        if (this.bindersAnimating) return; // Prevent overlapping animations
+        
+        this.bindersAnimating = true;
+        this.bindersAnimationFrame = 0;
+        this.bindersFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.bindersLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animation sequence: normal background → binders1 → normal background
+        const sequence = [null, 'binders1', null];
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.bindersAnimationFrame < sequence.length) {
+                const currentFrame = sequence[this.bindersAnimationFrame];
+                
+                // Hide all layers first
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+                
+                // Show current frame if it's not null (normal background)
+                if (currentFrame) {
+                    const layerIndex = parseInt(currentFrame.replace('binders', '')) - 1;
+                    this.bindersLayers[layerIndex].setAlpha(1);
+                }
+                
+                this.bindersFrameDuration++;
+                
+                // If we've shown this frame for 5 cycles (longer), move to next frame
+                if (this.bindersFrameDuration >= 5) {
+                    this.bindersAnimationFrame++;
+                    this.bindersFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a longer delay
+                this.time.delayedCall(200, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+                this.bindersAnimating = false;
             }
         };
         
@@ -295,6 +416,10 @@ export class Game extends Scene {
                 this.animatePhone();
             } else if (key === 'newspaper') {
                 this.animatePaper();
+            } else if (key === 'computer') {
+                this.animateComputer();
+            } else if (key === 'binders') {
+                this.hover_call();
             }
         });
 
@@ -306,6 +431,11 @@ export class Game extends Scene {
                 duration: 200,
                 ease: 'Power2'
             });
+            
+            // Hide binders1 frame when not hovering
+            if (key === 'binders') {
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+            }
         });
 
         // Store references for potential future use
@@ -378,20 +508,20 @@ export class Game extends Scene {
 
         // Day counter
         this.dayText = this.add.text(50, 50, `Day ${this.gameState.currentDay}`, {
-            fontSize: '24px',
+            fontSize: '28px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#000000',
+            stroke: '#ffffff',
             strokeThickness: 2
         });
         this.uiOverlay.add(this.dayText);
 
         // Client counter
         this.clientText = this.add.text(50, 80, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
-            fontSize: '18px',
+            fontSize: '22px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#000000',
+            stroke: '#ffffff',
             strokeThickness: 2
         });
         this.uiOverlay.add(this.clientText);
@@ -605,9 +735,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const closeButtonText = this.add.text(530, modalY + 720, 'Close', {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(closeButtonText);
 
@@ -637,11 +769,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(prevButton);
 
         const prevButtonText = this.add.text(modalX + 200, buttonY, 'Previous', {
-            fontSize: '14px',
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(prevButtonText);
 
@@ -667,11 +801,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(nextButton);
 
         const nextButtonText = this.add.text(modalX + modalWidth - 150, buttonY, 'Next', {
-            fontSize: '14px',
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(nextButtonText);
 
@@ -921,12 +1057,35 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.bubbleText.setOrigin(0.5);
         this.bubbleText.setDepth(76);
 
+        // Add red X close button
+        const closeX = bubbleX + bubbleWidth / 2 - 20;
+        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        
+        this.speechBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
+        this.speechBubbleCloseButton.setInteractive();
+        this.speechBubbleCloseButton.setDepth(77);
+        this.speechBubbleCloseButton.on('pointerdown', () => {
+            this.hideSpeechBubble();
+        });
+
+        // Add X text
+        this.speechBubbleCloseText = this.add.text(closeX, closeY, 'X', {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            fontStyle: 'bold'
+        });
+        this.speechBubbleCloseText.setOrigin(0.5);
+        this.speechBubbleCloseText.setDepth(78);
+
         // Animate in
         this.speechBubble.setAlpha(0);
         this.bubbleText.setAlpha(0);
+        this.speechBubbleCloseButton.setAlpha(0);
+        this.speechBubbleCloseText.setAlpha(0);
 
         this.tweens.add({
-            targets: [this.speechBubble, this.bubbleText],
+            targets: [this.speechBubble, this.bubbleText, this.speechBubbleCloseButton, this.speechBubbleCloseText],
             alpha: 1,
             duration: 300,
             ease: 'Power2'
@@ -934,17 +1093,118 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     hideSpeechBubble() {
-        if (this.speechBubble && this.bubbleText) {
+        if (this.speechBubble && this.bubbleText && this.speechBubbleCloseButton && this.speechBubbleCloseText) {
             this.tweens.add({
-                targets: [this.speechBubble, this.bubbleText],
+                targets: [this.speechBubble, this.bubbleText, this.speechBubbleCloseButton, this.speechBubbleCloseText],
                 alpha: 0,
                 duration: 300,
                 ease: 'Power2',
                 onComplete: () => {
                     this.speechBubble.destroy();
                     this.bubbleText.destroy();
+                    this.speechBubbleCloseButton.destroy();
+                    this.speechBubbleCloseText.destroy();
                     this.speechBubble = null;
                     this.bubbleText = null;
+                    this.speechBubbleCloseButton = null;
+                    this.speechBubbleCloseText = null;
+                }
+            });
+        }
+    }
+
+    showPhoneBubble(text) {
+        // Hide any existing phone bubble first
+        this.hidePhoneBubble();
+        
+        // Create phone bubble positioned above the phone
+        const bubbleWidth = 280;
+        const bubbleHeight = 100;
+        const bubbleX = 805; // Phone X position
+        const bubbleY = 400; // Above the phone
+
+        this.phoneBubble = this.add.graphics();
+        this.phoneBubble.setDepth(75);
+
+        // Draw bubble
+        this.phoneBubble.fillStyle(0x000000, 0.95);
+        this.phoneBubble.lineStyle(3, 0xffffff, 1);
+        this.phoneBubble.fillRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+        this.phoneBubble.strokeRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+
+        // Draw tail pointing down to phone
+        const tailPoints = [
+            bubbleX, bubbleY + bubbleHeight / 2,
+            bubbleX - 20, bubbleY + bubbleHeight / 2 + 25,
+            bubbleX + 20, bubbleY + bubbleHeight / 2 + 25
+        ];
+        this.phoneBubble.fillStyle(0x000000, 0.95);
+        this.phoneBubble.lineStyle(3, 0xffffff, 1);
+        this.phoneBubble.fillTriangle(...tailPoints);
+        this.phoneBubble.strokeTriangle(...tailPoints);
+
+        // Add text
+        this.phoneBubbleText = this.add.text(bubbleX, bubbleY - 10, text, {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            align: 'center',
+            wordWrap: { width: bubbleWidth - 40 }
+        });
+        this.phoneBubbleText.setOrigin(0.5);
+        this.phoneBubbleText.setDepth(76);
+
+        // Add red X close button
+        const closeX = bubbleX + bubbleWidth / 2 - 20;
+        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        
+        this.phoneBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
+        this.phoneBubbleCloseButton.setInteractive();
+        this.phoneBubbleCloseButton.setDepth(77);
+        this.phoneBubbleCloseButton.on('pointerdown', () => {
+            this.hidePhoneBubble();
+        });
+
+        // Add X text
+        this.phoneBubbleCloseText = this.add.text(closeX, closeY, 'X', {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            fontStyle: 'bold'
+        });
+        this.phoneBubbleCloseText.setOrigin(0.5);
+        this.phoneBubbleCloseText.setDepth(78);
+
+        // Animate in
+        this.phoneBubble.setAlpha(0);
+        this.phoneBubbleText.setAlpha(0);
+        this.phoneBubbleCloseButton.setAlpha(0);
+        this.phoneBubbleCloseText.setAlpha(0);
+
+        this.tweens.add({
+            targets: [this.phoneBubble, this.phoneBubbleText, this.phoneBubbleCloseButton, this.phoneBubbleCloseText],
+            alpha: 1,
+            duration: 300,
+            ease: 'Power2'
+        });
+    }
+
+    hidePhoneBubble() {
+        if (this.phoneBubble && this.phoneBubbleText && this.phoneBubbleCloseButton && this.phoneBubbleCloseText) {
+            this.tweens.add({
+                targets: [this.phoneBubble, this.phoneBubbleText, this.phoneBubbleCloseButton, this.phoneBubbleCloseText],
+                alpha: 0,
+                duration: 300,
+                ease: 'Power2',
+                onComplete: () => {
+                    this.phoneBubble.destroy();
+                    this.phoneBubbleText.destroy();
+                    this.phoneBubbleCloseButton.destroy();
+                    this.phoneBubbleCloseText.destroy();
+                    this.phoneBubble = null;
+                    this.phoneBubbleText = null;
+                    this.phoneBubbleCloseButton = null;
+                    this.phoneBubbleCloseText = null;
                 }
             });
         }
@@ -966,15 +1226,29 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     showWordOfMouthClue() {
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'wordOfMouth');
         if (clue) {
-            this.showClueModal('Word of Mouth', clue);
+            this.showPhoneBubble(clue);
         }
     }
 
     showComputerClue() {
-
-        const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
-        if (clue) {
-            this.showClueModal(clue.title, this.formatChartData(clue));
+        // Get chart data from current scenario
+        const chartData = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
+        
+        if (chartData && chartData.type && chartData.title) {
+            // Map the chart type to the correct image name
+            let imageKey = chartData.type;
+            
+            // Handle pie chart naming differences
+            if (chartData.type === 'pie-green') {
+                imageKey = 'graph-green-pie';
+            } else if (chartData.type === 'pie-red') {
+                imageKey = 'graph-red-pie';
+            }
+            
+            this.showComputerModal(imageKey, chartData.title);
+        } else {
+            // Fallback if no chart data is available
+            this.showComputerModal('graph-down', 'MARKET ANALYSIS REPORT');
         }
     }
 
@@ -991,7 +1265,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             return;
         }
 
-        // Get client data
+        // Get client data from the clients array
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
         
         // Create client files modal container
@@ -1006,8 +1280,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         modal.add(modalBg);
         
         // Modal content
-        const modalWidth = 700;
-        const modalHeight = 600;
+        const modalWidth = 500;
+        const modalHeight = 400;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
 
@@ -1028,12 +1302,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         }).setOrigin(0.5);
         modal.add(titleText);
 
-        // Client Information Section
-        const clientInfoY = modalY + 80;
+        // Client Name Section
+        const nameY = modalY + 80;
         const clientName = clientData ? clientData.name : 'Unknown Client';
-        const clientDesc = clientData ? clientData.description : 'No description available';
         
-        const clientNameText = this.add.text(modalX + 20, clientInfoY, `CLIENT: ${clientName.toUpperCase()}`, {
+        const clientNameText = this.add.text(modalX + 20, nameY, `${clientName.toUpperCase()}`, {
             fontSize: '20px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#3498db',
@@ -1042,103 +1315,46 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         });
         modal.add(clientNameText);
 
-        const clientDescText = this.add.text(modalX + 20, clientInfoY + 30, clientDesc, {
-            fontSize: '14px',
+        // Client Description Section
+        const descY = nameY + 40;
+        const clientDesc = clientData ? clientData.description : 'No description available';
+        
+        console.log('Client data:', clientData);
+        console.log('Client description:', clientDesc);
+        
+        const clientDescText = this.add.text(modalX + 20, descY, clientDesc, {
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
+            color: '#ffffff',
             stroke: '#000000',
-            strokeThickness: 1,
+            strokeThickness: 2,
             wordWrap: { width: modalWidth - 40 }
         });
         modal.add(clientDescText);
 
-        // Scenario Information Section
-        const scenarioY = clientInfoY + 80;
-        const scenarioNameText = this.add.text(modalX + 20, scenarioY, `CASE: ${this.currentClient.name.toUpperCase()}`, {
-            fontSize: '18px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#e74c3c',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        modal.add(scenarioNameText);
-
-        const scenarioDescText = this.add.text(modalX + 20, scenarioY + 25, this.currentClient.description, {
-            fontSize: '14px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
-            stroke: '#000000',
-            strokeThickness: 1,
-            wordWrap: { width: modalWidth - 40 }
-        });
-        modal.add(scenarioDescText);
-
-        // Opening Statement Section
-        const openingY = scenarioY + 70;
-        const openingTitleText = this.add.text(modalX + 20, openingY, 'CLIENT STATEMENT:', {
+        // Risk Factor Section
+        const riskY = descY + 60;
+        const riskFactor = clientData ? clientData.riskFactor : 'N/A';
+        console.log('Client risk factor:', riskFactor);
+        const riskColor = riskFactor >= 7 ? '#e74c3c' : riskFactor >= 4 ? '#f39c12' : '#27ae60'; // Red for high, orange for medium, green for low
+        
+        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK FACTOR:', {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#f39c12',
             stroke: '#000000',
             strokeThickness: 1
         });
-        modal.add(openingTitleText);
+        modal.add(riskTitleText);
 
-        const openingText = this.add.text(modalX + 20, openingY + 25, `"${this.currentClient.openingStatement}"`, {
-            fontSize: '14px',
+        const riskValueText = this.add.text(modalX + 20, riskY + 25, `${riskFactor}/10`, {
+            fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
-            stroke: '#000000',
-            strokeThickness: 1,
-            wordWrap: { width: modalWidth - 40 },
-            fontStyle: 'italic'
-        });
-        modal.add(openingText);
-
-        // Available Evidence Section
-        const evidenceY = openingY + 80;
-        const evidenceTitleText = this.add.text(modalX + 20, evidenceY, 'AVAILABLE EVIDENCE:', {
-            fontSize: '16px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#27ae60',
+            color: riskColor,
             stroke: '#000000',
             strokeThickness: 1
         });
-        modal.add(evidenceTitleText);
-
-        let evidenceYOffset = 25;
-        const evidenceTypes = [
-            { key: 'wordOfMouth', label: '• Phone Messages', color: '#3498db' },
-            { key: 'newspaper', label: '• News Articles', color: '#e74c3c' },
-            { key: 'charts', label: '• Financial Charts', color: '#f39c12' },
-            { key: 'graphs', label: '• Market Graphs', color: '#9b59b6' }
-        ];
-
-        evidenceTypes.forEach(evidenceType => {
-            const hasEvidence = this.currentClient.clues && this.currentClient.clues[evidenceType.key];
-            const evidenceText = this.add.text(modalX + 20, evidenceY + evidenceYOffset, 
-                hasEvidence ? evidenceType.label : `${evidenceType.label} (No data)`, {
-                fontSize: '14px',
-                fontFamily: 'Minecraft, Courier New, monospace',
-                color: hasEvidence ? evidenceType.color : '#7f8c8d',
-                stroke: '#000000',
-                strokeThickness: 1
-            });
-            modal.add(evidenceText);
-            evidenceYOffset += 20;
-        });
-
-        // Game State Information
-        const gameStateY = evidenceY + evidenceYOffset + 20;
-        const gameStateText = this.add.text(modalX + 20, gameStateY, 
-            `DAY: ${this.gameState.currentDay} | CLIENT: ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients} | REPUTATION: ${this.gameState.reputationScore}`, {
-            fontSize: '12px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#95a5a6',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        modal.add(gameStateText);
+        modal.add(riskValueText);
 
         // Close button
         const closeButton = this.add.rectangle(512, modalY + modalHeight - 40, 120, 40, 0x8B4513);
@@ -1169,6 +1385,74 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Play paper sound effect
         this.sound.play('paper-turn', { volume: 0.5 });
+    }
+
+    showComputerModal(computerImageKey, headerText) {
+        // Create computer modal container
+        const modal = this.add.container(0, 0);
+        modal.setDepth(150);
+        
+        // Modal background - make interactive to block clicks
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.8);
+        modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        modal.add(modalBg);
+        
+        // Display the computer UI sprite centered
+        const computerSprite = this.add.image(512, 384, computerImageKey);
+        computerSprite.setScale(0.6); // Scale to fit nicely in modal
+        modal.add(computerSprite);
+        
+        // Create header text overlay
+        const header = this.add.text(500, 218, headerText, {
+            fontFamily: '"Minecraft", "Courier New", monospace',
+            fontSize: '38px',
+            color: '#ffffff', // White text for better visibility
+            fontStyle: 'bold',
+            align: 'center',
+            stroke: '#000000',
+            strokeThickness: 2,
+            textShadow: {
+                offsetX: 1,
+                offsetY: 1,
+                color: '#333333',
+                blur: 2,
+                stroke: false,
+                fill: true
+            },
+            wordWrap: { width: 380 },
+            resolution: 1, // Lower resolution for more pixelated effect
+        }).setOrigin(0.5, 0.25);
+        modal.add(header);
+        
+        // Close button positioned below the computer screen
+        const closeButton = this.add.rectangle(512, 600, 120, 40, 0x8B4513);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            modal.destroy();
+        });
+        modal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, 600, 'Close', {
+            fontSize: '18px',
+            color: '#ffffff',
+            fontFamily: '"Minecraft", "Courier New", monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1, // Lower resolution for pixelated effect
+        }).setOrigin(0.5);
+        modal.add(closeButtonText);
+        
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D);
+        });
+        
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513);
+        });
     }
 
     showNewspaperModal(clue) {
@@ -1507,6 +1791,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Hide opening statement bubble and then show outcome after animation completes
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
         this.time.delayedCall(350, () => {
             this.showOutcome(outcome);
         });
@@ -1568,6 +1853,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Hide any speech bubbles
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
         this.removeAvatar();
 
     }
@@ -1576,6 +1862,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         this.removeAvatar(false);
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
 
         // Show day summary
         const daySummary = this.gameState.getDaySummary();
