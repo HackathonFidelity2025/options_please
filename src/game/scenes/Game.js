@@ -279,17 +279,83 @@ export class Game extends Scene {
     }
     
     startAutoAnimations() {
-        // Set up auto-animation timers for each interactive element
+        // Set up auto-animation timers for each interactive element with randomized intervals
         const elements = ['keyboard', 'phone', 'newspaper', 'computer', 'binders'];
         
         elements.forEach(element => {
+            // Randomize initial delay and interval for each element
+            const baseDelay = 3000 + Math.random() * 4000; // 3-7 seconds base
+            const randomOffset = Math.random() * 2000; // 0-2 seconds additional randomization
+            
             this.autoAnimationTimers[element] = this.time.addEvent({
-                delay: 5000, // Check every 5 seconds
+                delay: baseDelay + randomOffset,
                 callback: () => {
                     this.checkAndTriggerAutoAnimation(element);
+                    // Reschedule with new random interval
+                    this.rescheduleAutoAnimation(element);
                 },
-                loop: true
+                loop: false // We'll manually reschedule for randomization
             });
+        });
+        
+        // Start guidebook bounce animation
+        this.startGuidebookBounce();
+    }
+    
+    rescheduleAutoAnimation(element) {
+        // Create new random interval for next animation
+        const baseInterval = 4000 + Math.random() * 6000; // 4-10 seconds base
+        const randomOffset = Math.random() * 3000; // 0-3 seconds additional randomization
+        
+        this.autoAnimationTimers[element] = this.time.addEvent({
+            delay: baseInterval + randomOffset,
+            callback: () => {
+                this.checkAndTriggerAutoAnimation(element);
+                this.rescheduleAutoAnimation(element);
+            },
+            loop: false
+        });
+    }
+    
+    startGuidebookBounce() {
+        // Create randomized guidebook bounce animation
+        const scheduleNextBounce = () => {
+            const bounceDelay = 8000 + Math.random() * 12000; // 8-20 seconds between bounces
+            
+            this.time.delayedCall(bounceDelay, () => {
+                this.performGuidebookBounce();
+                scheduleNextBounce(); // Schedule the next bounce
+            });
+        };
+        
+        // Start the first bounce after a random delay
+        const initialDelay = 5000 + Math.random() * 8000; // 5-13 seconds initial delay
+        this.time.delayedCall(initialDelay, () => {
+            this.performGuidebookBounce();
+            scheduleNextBounce();
+        });
+    }
+    
+    performGuidebookBounce() {
+        if (!this.guidebookButton) return;
+        
+        // Store original position if not already stored
+        if (!this.guidebookButton.originalY) {
+            this.guidebookButton.originalY = this.guidebookButton.y;
+        }
+        
+        // Create bounce animation
+        this.tweens.add({
+            targets: this.guidebookButton,
+            y: this.guidebookButton.originalY - 8, // Bounce up 8 pixels
+            duration: 200,
+            ease: 'Power2.easeOut',
+            yoyo: true,
+            repeat: 1, // Bounce up and down once
+            onComplete: () => {
+                // Ensure it returns to original position
+                this.guidebookButton.y = this.guidebookButton.originalY;
+            }
         });
     }
     
@@ -297,8 +363,13 @@ export class Game extends Scene {
         const currentTime = this.time.now;
         const timeSinceLastInteraction = currentTime - this.lastInteractionTimes[element];
         
-        // If it's been more than 15 seconds since last interaction, trigger animation
-        if (timeSinceLastInteraction > 15000) {
+        // Use randomized threshold to make animations less predictable
+        const baseThreshold = 12000; // 12 seconds base
+        const randomThreshold = Math.random() * 8000; // 0-8 seconds additional randomization
+        const totalThreshold = baseThreshold + randomThreshold;
+        
+        // If it's been more than the randomized threshold since last interaction, trigger animation
+        if (timeSinceLastInteraction > totalThreshold) {
             this.triggerAutoAnimation(element);
         }
     }
