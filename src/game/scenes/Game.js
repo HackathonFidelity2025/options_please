@@ -211,10 +211,11 @@ export class Game extends Scene
         this.dayStartModal = this.add.container(0, 0);
         this.dayStartModal.setDepth(200);
         
-        // Modal background
+        // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.dayStartModal.add(modalBg);
         
         // Modal content
@@ -431,6 +432,7 @@ export class Game extends Scene
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'newspaper');
         if (clue) {
             this.showClueModal('Newspaper Headlines', clue);
+            this.sound.play('paper-turn', { volume: 1 });
         }
     }
 
@@ -439,10 +441,11 @@ export class Game extends Scene
         const modal = this.add.container(0, 0);
         modal.setDepth(150);
         
-        // Modal background
+        // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         modal.add(modalBg);
         
         // Modal content
@@ -509,10 +512,11 @@ export class Game extends Scene
         this.decisionModal = this.add.container(0, 0);
         this.decisionModal.setDepth(200);
         
-        // Modal background
+        // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.decisionModal.add(modalBg);
         
         // Modal content
@@ -693,10 +697,11 @@ export class Game extends Scene
         const summaryModal = this.add.container(0, 0);
         summaryModal.setDepth(200);
         
-        // Modal background
+        // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         summaryModal.add(modalBg);
         
         // Modal content
@@ -773,10 +778,11 @@ export class Game extends Scene
         const finalModal = this.add.container(0, 0);
         finalModal.setDepth(200);
         
-        // Modal background
+        // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         finalModal.add(modalBg);
         
         // Modal content
