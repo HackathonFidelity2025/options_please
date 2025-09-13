@@ -3,10 +3,8 @@ import { Scene } from 'phaser';
 import { GameState } from '../GameState';
 import { ScenarioManager } from '../ScenarioManager';
 
-export class Game extends Scene
-{
-    constructor ()
-    {
+export class Game extends Scene {
+    constructor() {
         super('Game');
         this.gameState = new GameState();
         this.scenarioManager = null; // Will be initialized in create()
@@ -19,26 +17,25 @@ export class Game extends Scene
         this.currentGuidebookPage = 0;
     }
 
-    create ()
-    {
+    create() {
         // Initialize game state
         this.gameState.initialize();
-        
+
         // Initialize scenario manager with scene reference
         this.scenarioManager = new ScenarioManager(this);
-        
+
         // Set up the main game background
         this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
-        
+
         // Create the desk and UI elements
         this.createDeskElements();
-        
+
         // Create UI overlay elements
         this.createUIOverlay();
-        
+
         // Start the first day
         this.startNewDay();
-        
+
         EventBus.emit('current-scene-ready', this);
     }
 
@@ -56,20 +53,20 @@ export class Game extends Scene
         this.clueElements[key].setInteractive();
         this.clueElements[key].on('pointerdown', onClick);
         this.clueElements[key].setDepth(10);
-        
+
         // Create the label positioned in the center of the element
         const labelX = x; // Center horizontally
         const labelY = y; // Center vertically
-        
+
         // Create the label text first to get its actual dimensions
-        const label = this.add.text(labelX, labelY, labelText, { 
+        const label = this.add.text(labelX, labelY, labelText, {
             fontSize: '20px', // Increased font size
             color: '#ffffff',
             fontFamily: 'Courier New, monospace' // Monospace font for retro feel
         }).setDepth(15);
         label.setOrigin(0.5, 0.5); // Center the text origin
         label.setAlpha(0); // Start hidden
-        
+
         // Get actual text dimensions
         const textWidth = label.width;
         const textHeight = label.height;
@@ -77,7 +74,7 @@ export class Game extends Scene
         const paddingY = 2; // Vertical padding
         const bgWidth = textWidth + (paddingX * 2);
         const bgHeight = textHeight + (paddingY * 2);
-        
+
         // Create label background (retro label printer style) - initially hidden
         const labelBg = this.add.graphics();
         labelBg.fillStyle(0x000000, 0.7); // Black background with 0.7 opacity
@@ -85,7 +82,7 @@ export class Game extends Scene
         labelBg.fillRoundedRect(labelX - (bgWidth / 2), labelY - (bgHeight / 2), bgWidth, bgHeight, 3);
         labelBg.setDepth(14);
         labelBg.setAlpha(0); // Start hidden
-        
+
         // Add hover events to show/hide labels
         this.clueElements[key].on('pointerover', () => {
             // Play hover sound
@@ -98,7 +95,7 @@ export class Game extends Scene
                 ease: 'Power2'
             });
         });
-        
+
         this.clueElements[key].on('pointerout', () => {
             // Hide label when not hovering
             this.tweens.add({
@@ -108,7 +105,7 @@ export class Game extends Scene
                 ease: 'Power2'
             });
         });
-        
+
         // Store references for potential future use
         this.clueElements[key].label = label;
         this.clueElements[key].labelBg = labelBg;
@@ -116,20 +113,20 @@ export class Game extends Scene
 
     createAvatarLabel() {
         if (!this.avatarHitbox) return;
-        
+
         // Create label using the same pattern as desk elements
         const labelText = 'Chat';
         const labelX = this.avatarHitbox.x - 20; // Top left of hitbox
         const labelY = this.avatarHitbox.y - 20;
-        
+
         // Create the label text first to get its actual dimensions
-        const label = this.add.text(labelX, labelY, labelText, { 
+        const label = this.add.text(labelX, labelY, labelText, {
             fontSize: '20px',
             color: '#ffffff',
             fontFamily: 'Courier New, monospace'
         }).setDepth(200);
         label.setAlpha(0); // Start hidden
-        
+
         // Get actual text dimensions
         const textWidth = label.width;
         const textHeight = label.height;
@@ -137,14 +134,14 @@ export class Game extends Scene
         const paddingY = 2;
         const bgWidth = textWidth + (paddingX * 2);
         const bgHeight = textHeight + (paddingY * 2);
-        
+
         // Create label background
         const labelBg = this.add.graphics();
         labelBg.fillStyle(0x000000, 0.7);
         labelBg.fillRoundedRect(labelX - paddingX, labelY - paddingY, bgWidth, bgHeight, 3);
         labelBg.setDepth(199);
         labelBg.setAlpha(0); // Start hidden
-        
+
         // Add hover events to the existing hitbox
         this.avatarHitbox.on('pointerover', () => {
             console.log('Avatar hover detected!');
@@ -155,7 +152,7 @@ export class Game extends Scene
                 ease: 'Power2'
             });
         });
-        
+
         this.avatarHitbox.on('pointerout', () => {
             console.log('Avatar hover ended!');
             this.tweens.add({
@@ -165,7 +162,7 @@ export class Game extends Scene
                 ease: 'Power2'
             });
         });
-        
+
         // Store references for cleanup
         this.avatarHitbox.chatLabel = label;
         this.avatarHitbox.chatLabelBg = labelBg;
@@ -175,7 +172,7 @@ export class Game extends Scene
         // Create UI overlay elements
         this.uiOverlay = this.add.container(0, 0);
         this.uiOverlay.setDepth(100);
-        
+
         // Day counter
         this.dayText = this.add.text(50, 50, `Day ${this.gameState.currentDay}`, {
             fontSize: '24px',
@@ -184,7 +181,7 @@ export class Game extends Scene
             strokeThickness: 2
         });
         this.uiOverlay.add(this.dayText);
-        
+
         // Reputation score
         this.reputationText = this.add.text(50, 80, `Reputation: ${this.gameState.reputationScore}`, {
             fontSize: '20px',
@@ -193,7 +190,7 @@ export class Game extends Scene
             strokeThickness: 2
         });
         this.uiOverlay.add(this.reputationText);
-        
+
         // Client counter
         this.clientText = this.add.text(50, 110, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
             fontSize: '18px',
@@ -202,60 +199,91 @@ export class Game extends Scene
             strokeThickness: 2
         });
         this.uiOverlay.add(this.clientText);
-        
+
         // Create guidebook button in bottom right
         this.createGuidebookButton();
-        
+
         // Initialize guidebook pages
         this.initializeGuidebookPages();
     }
 
     createGuidebookButton() {
-        // Position in bottom right corner
-        const buttonX = 950;
-        const buttonY = 700;
-        const buttonWidth = 60;
-        const buttonHeight = 60;
-        
-        // Create guidebook button background
-        this.guidebookButton = this.add.rectangle(buttonX, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        // Position in bottom right corner - partially hidden
+        const buttonX = 880;
+        const buttonY = 820; // Positioned lower so it's partially hidden
+        const buttonWidth = 260; // Made bigger
+        const buttonHeight = 260; // Made bigger
+
+        // Create guidebook button using handbook image
+        this.guidebookButton = this.add.image(buttonX, buttonY, 'handbook');
+        this.guidebookButton.setDisplaySize(buttonWidth, buttonHeight);
         this.guidebookButton.setInteractive();
         this.guidebookButton.setDepth(120);
         this.guidebookButton.on('pointerdown', () => this.showGuidebookModal());
-        
-        // Add border
-        this.guidebookButtonBorder = this.add.graphics();
-        this.guidebookButtonBorder.lineStyle(2, 0xffffff, 1);
-        this.guidebookButtonBorder.strokeRoundedRect(buttonX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 8);
-        this.guidebookButtonBorder.setDepth(121);
-        
-        // Add "?" text
-        this.guidebookText = this.add.text(buttonX, buttonY, '?', {
-            fontSize: '32px',
+
+        // Create label using the same pattern as desk elements
+        const labelText = 'Guide Book';
+        const labelX = buttonX; // Center horizontally
+        const labelY = buttonY - buttonHeight / 2 - 20; // Position above the sprite
+
+        // Create the label text first to get its actual dimensions
+        const label = this.add.text(labelX, labelY, labelText, {
+            fontSize: '20px', // Same font size as other desk elements
             color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2
-        }).setOrigin(0.5);
-        this.guidebookText.setDepth(122);
-        
+            fontFamily: 'Courier New, monospace' // Same font as other desk elements
+        }).setDepth(125);
+        label.setOrigin(0.5, 0.5); // Center the text origin
+        label.setAlpha(0); // Start hidden
+
+        // Get actual text dimensions
+        const textWidth = label.width;
+        const textHeight = label.height;
+        const paddingX = 8; // Horizontal padding
+        const paddingY = 2; // Vertical padding
+        const bgWidth = textWidth + (paddingX * 2);
+        const bgHeight = textHeight + (paddingY * 2);
+
+        // Create label background (retro label printer style) - initially hidden
+        const labelBg = this.add.graphics();
+        labelBg.fillStyle(0x000000, 0.7); // Black background with 0.7 opacity
+        // Center the background around the centered text
+        labelBg.fillRoundedRect(labelX - (bgWidth / 2), labelY - (bgHeight / 2), bgWidth, bgHeight, 3);
+        labelBg.setDepth(124);
+        labelBg.setAlpha(0); // Start hidden
+
+        // Store original Y position for hover animation
+        this.guidebookButton.originalY = buttonY;
+
         // Add hover effects
         this.guidebookButton.on('pointerover', () => {
-            this.guidebookButton.setFillStyle(0x666666);
+            // Play hover sound
+            this.sound.play('hover', { rate: 1 });
+            // Show label on hover
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 1,
+                duration: 200,
+                ease: 'Power2'
+            });
             this.tweens.add({
                 targets: this.guidebookButton,
-                scaleX: 1.1,
-                scaleY: 1.1,
+                y: this.guidebookButton.originalY - 10,
                 duration: 200,
                 ease: 'Power2'
             });
         });
-        
+
         this.guidebookButton.on('pointerout', () => {
-            this.guidebookButton.setFillStyle(0x4a4a4a);
+            // Hide label when not hovering
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 0,
+                duration: 200,
+                ease: 'Power2'
+            });
             this.tweens.add({
                 targets: this.guidebookButton,
-                scaleX: 1,
-                scaleY: 1,
+                y: this.guidebookButton.originalY,
                 duration: 200,
                 ease: 'Power2'
             });
@@ -324,26 +352,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Create guidebook modal container
         this.guidebookModal = this.add.container(0, 0);
         this.guidebookModal.setDepth(250);
-        
+
         // Modal background
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.guidebookModal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 700;
         const modalHeight = 500;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(3, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
         this.guidebookModal.add(modalContent);
-        
+
         // Title
         const currentPage = this.guidebookPages[this.currentGuidebookPage];
         const titleText = this.add.text(512, modalY + 40, currentPage.title, {
@@ -353,7 +382,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         this.guidebookModal.add(titleText);
-        
+
         // Content
         const contentText = this.add.text(512, modalY + 120, currentPage.content, {
             fontSize: '16px',
@@ -364,18 +393,18 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             align: 'left'
         }).setOrigin(0.5);
         this.guidebookModal.add(contentText);
-        
+
         // Navigation buttons (only show if more than 1 page)
         if (this.guidebookPages.length > 1) {
             this.createGuidebookNavigation(modalX, modalY, modalWidth, modalHeight);
         }
-        
+
         // Close button
         const closeButton = this.add.rectangle(512, modalY + 420, 120, 40, 0xff0000);
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => this.hideGuidebookModal());
         this.guidebookModal.add(closeButton);
-        
+
         const closeButtonText = this.add.text(512, modalY + 420, 'Close', {
             fontSize: '18px',
             color: '#ffffff',
@@ -383,12 +412,12 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(closeButtonText);
-        
+
         // Add hover effect to close button
         closeButton.on('pointerover', () => {
             closeButton.setFillStyle(0xff3333);
         });
-        
+
         closeButton.on('pointerout', () => {
             closeButton.setFillStyle(0xff0000);
         });
@@ -398,13 +427,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const buttonY = modalY + 360;
         const buttonWidth = 80;
         const buttonHeight = 35;
-        
+
         // Previous button
         const prevButton = this.add.rectangle(modalX + 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
         prevButton.setInteractive();
         prevButton.on('pointerdown', () => this.previousGuidebookPage());
         this.guidebookModal.add(prevButton);
-        
+
         const prevButtonText = this.add.text(modalX + 100, buttonY, 'Previous', {
             fontSize: '14px',
             color: '#ffffff',
@@ -412,7 +441,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(prevButtonText);
-        
+
         // Page indicator
         const pageIndicator = this.add.text(512, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
             fontSize: '16px',
@@ -421,13 +450,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(pageIndicator);
-        
+
         // Next button
         const nextButton = this.add.rectangle(modalX + modalWidth - 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
         nextButton.setInteractive();
         nextButton.on('pointerdown', () => this.nextGuidebookPage());
         this.guidebookModal.add(nextButton);
-        
+
         const nextButtonText = this.add.text(modalX + modalWidth - 100, buttonY, 'Next', {
             fontSize: '14px',
             color: '#ffffff',
@@ -435,27 +464,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(nextButtonText);
-        
+
         // Update button states
         this.updateGuidebookNavigation(prevButton, nextButton, pageIndicator);
-        
+
         // Add hover effects
         prevButton.on('pointerover', () => {
             if (this.currentGuidebookPage > 0) {
                 prevButton.setFillStyle(0x666666);
             }
         });
-        
+
         prevButton.on('pointerout', () => {
             prevButton.setFillStyle(0x4a4a4a);
         });
-        
+
         nextButton.on('pointerover', () => {
             if (this.currentGuidebookPage < this.guidebookPages.length - 1) {
                 nextButton.setFillStyle(0x666666);
             }
         });
-        
+
         nextButton.on('pointerout', () => {
             nextButton.setFillStyle(0x4a4a4a);
         });
@@ -464,7 +493,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     updateGuidebookNavigation(prevButton, nextButton, pageIndicator) {
         // Update page indicator
         pageIndicator.setText(`${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`);
-        
+
         // Update button states
         if (this.currentGuidebookPage === 0) {
             prevButton.setAlpha(0.5);
@@ -473,7 +502,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             prevButton.setAlpha(1);
             prevButton.setInteractive();
         }
-        
+
         if (this.currentGuidebookPage === this.guidebookPages.length - 1) {
             nextButton.setAlpha(0.5);
             nextButton.removeInteractive();
@@ -515,27 +544,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Create day start modal container
         this.dayStartModal = this.add.container(0, 0);
         this.dayStartModal.setDepth(200);
-        
+
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.dayStartModal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 400;
         const modalHeight = 300;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(2, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         this.dayStartModal.add(modalContent);
-        
+
         // Day start text
         const dayStartText = this.add.text(512, modalY + 80, `Day ${this.gameState.currentDay}`, {
             fontSize: '32px',
@@ -544,7 +573,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         this.dayStartModal.add(dayStartText);
-        
+
         const instructionText = this.add.text(512, modalY + 140, 'Ready to start trading?', {
             fontSize: '20px',
             color: '#ffffff',
@@ -552,13 +581,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         this.dayStartModal.add(instructionText);
-        
+
         // Start button
         const startButton = this.add.rectangle(512, modalY + 200, 120, 40, 0x00ff00);
         startButton.setInteractive();
         startButton.on('pointerdown', () => this.hideDayStartModal());
         this.dayStartModal.add(startButton);
-        
+
         const startButtonText = this.add.text(512, modalY + 200, 'Start Day', {
             fontSize: '18px',
             color: '#000000',
@@ -580,26 +609,26 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     spawnClient() {
         // Get a random scenario
         this.currentClient = this.scenarioManager.getRandomScenario();
-        
+
         // Get client data for this scenario
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
-        
+
         // Use client avatar or fallback to tech-bro
         const avatarKey = clientData ? clientData.avatar.replace('.png', '') : 'tech-bro';
-        
+
         // Create client avatar using dynamic image
         this.clientAvatar = this.add.image(-200, 326, avatarKey);
         this.clientAvatar.setOrigin(0.5);
         this.clientAvatar.setScale(0.3);
         this.clientAvatar.setDepth(50);
-        
+
         // Create a larger hitbox for better interaction (temporarily visible for debugging)
         this.avatarHitbox = this.add.rectangle(-200, 335, 130, 295, 0xff0000, 0.3);
         this.avatarHitbox.setInteractive();
         this.avatarHitbox.setDepth(51); // Above the avatar
-        
+
         // Avatar label will be created after slide-in animation completes
-        
+
         // Slide client in
         this.tweens.add({
             targets: [this.clientAvatar, this.avatarHitbox],
@@ -614,15 +643,15 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
                 this.showClientOpeningStatement();
             }
         });
-        
+
         // Highlight interactive elements
         this.highlightClueElements();
     }
 
     showClientOpeningStatement() {
         // Show opening statement in speech bubble
-        this.showSpeechBubble(this.currentClient.openingStatement);
-        
+        this.showSpeechBubble(this.currentClient.openingStatement); // opening statement should close when a recommendation is made.
+
         // Make client avatar clickable to toggle opening dialogue
         this.avatarHitbox.on('pointerdown', () => {
             if (this.speechBubble && this.speechBubble.alpha > 0) {
@@ -633,7 +662,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
                 this.showSpeechBubble(this.currentClient.openingStatement);
             }
         });
-        
+
     }
 
     showSpeechBubble(text) {
@@ -645,18 +674,18 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         this.speechBubble = this.add.graphics();
         this.speechBubble.setDepth(75);
-        
+
         // Draw bubble
         this.speechBubble.fillStyle(0x000000, 0.95);
         this.speechBubble.lineStyle(3, 0xffffff, 1);
-        this.speechBubble.fillRoundedRect(bubbleX - bubbleWidth/2, bubbleY - bubbleHeight/2, bubbleWidth, bubbleHeight, 15);
-        this.speechBubble.strokeRoundedRect(bubbleX - bubbleWidth/2, bubbleY - bubbleHeight/2, bubbleWidth, bubbleHeight, 15);
-        
+        this.speechBubble.fillRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+        this.speechBubble.strokeRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+
         // Draw tail
         const tailPoints = [
-            bubbleX - 60, bubbleY + bubbleHeight/2,
-            bubbleX - 80, bubbleY + bubbleHeight/2 + 25,
-            bubbleX - 40, bubbleY + bubbleHeight/2
+            bubbleX - 60, bubbleY + bubbleHeight / 2,
+            bubbleX - 80, bubbleY + bubbleHeight / 2 + 25,
+            bubbleX - 40, bubbleY + bubbleHeight / 2
         ];
         this.speechBubble.fillStyle(0x000000, 0.95);
         this.speechBubble.lineStyle(3, 0xffffff, 1);
@@ -671,14 +700,14 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             align: 'center',
             wordWrap: { width: bubbleWidth - 20 }
         });
-        
+
         this.bubbleText.setOrigin(0.5);
         this.bubbleText.setDepth(76);
-        
+
         // Animate in
         this.speechBubble.setAlpha(0);
         this.bubbleText.setAlpha(0);
-        
+
         this.tweens.add({
             targets: [this.speechBubble, this.bubbleText],
             alpha: 1,
@@ -745,27 +774,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Create modal container
         const modal = this.add.container(0, 0);
         modal.setDepth(150);
-        
+
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         modal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 600;
         const modalHeight = 400;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(2, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modal.add(modalContent);
-        
+
         // Title
         const titleText = this.add.text(512, modalY + 40, title, {
             fontSize: '24px',
@@ -774,7 +803,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         modal.add(titleText);
-        
+
         // Content
         const contentText = this.add.text(512, modalY + 100, content, {
             fontSize: '16px',
@@ -785,7 +814,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             align: 'center'
         }).setOrigin(0.5);
         modal.add(contentText);
-        
+
         // Close button
         const closeButton = this.add.rectangle(512, modalY + 320, 100, 40, 0xff0000);
         closeButton.setInteractive();
@@ -793,7 +822,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             modal.destroy();
         });
         modal.add(closeButton);
-        
+
         const closeButtonText = this.add.text(512, modalY + 320, 'Close', {
             fontSize: '18px',
             color: '#ffffff',
@@ -816,27 +845,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Create decision modal container
         this.decisionModal = this.add.container(0, 0);
         this.decisionModal.setDepth(200);
-        
+
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.decisionModal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 500;
         const modalHeight = 300;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(2, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         this.decisionModal.add(modalContent);
-        
+
         // Title
         const titleText = this.add.text(512, modalY + 60, 'Make Your Decision', {
             fontSize: '24px',
@@ -845,16 +874,16 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         this.decisionModal.add(titleText);
-        
+
         // Decision buttons
         const buttonY = modalY + 150;
-        
+
         // Call button
         const callButton = this.add.rectangle(modalX + 100, buttonY, 80, 40, 0x00ff00);
         callButton.setInteractive();
         callButton.on('pointerdown', () => this.makeDecision('call'));
         this.decisionModal.add(callButton);
-        
+
         const callButtonText = this.add.text(modalX + 100, buttonY, 'Call', {
             fontSize: '18px',
             color: '#000000',
@@ -862,13 +891,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(callButtonText);
-        
+
         // Put button
         const putButton = this.add.rectangle(modalX + 250, buttonY, 80, 40, 0xff0000);
         putButton.setInteractive();
         putButton.on('pointerdown', () => this.makeDecision('put'));
         this.decisionModal.add(putButton);
-        
+
         const putButtonText = this.add.text(modalX + 250, buttonY, 'Put', {
             fontSize: '18px',
             color: '#ffffff',
@@ -876,13 +905,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(putButtonText);
-        
+
         // Hold button
         const holdButton = this.add.rectangle(modalX + 400, buttonY, 80, 40, 0xffff00);
         holdButton.setInteractive();
         holdButton.on('pointerdown', () => this.makeDecision('hold'));
         this.decisionModal.add(holdButton);
-        
+
         const holdButtonText = this.add.text(modalX + 400, buttonY, 'Hold', {
             fontSize: '18px',
             color: '#000000',
@@ -890,7 +919,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(holdButtonText);
-        
+
         // Close button
         const closeButton = this.add.rectangle(512, modalY + 220, 100, 30, 0x666666);
         closeButton.setInteractive();
@@ -898,7 +927,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.hideDecisionModal();
         });
         this.decisionModal.add(closeButton);
-        
+
         const closeButtonText = this.add.text(512, modalY + 220, 'Close', {
             fontSize: '16px',
             color: '#ffffff',
@@ -921,13 +950,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         if (this.clientAvatar) {
             this.clientAvatar.removeInteractive();
         }
-        
+
         // Hide decision modal
         this.hideDecisionModal();
-        
+
         // Get outcome
         const outcome = this.scenarioManager.getOutcome(this.currentClient, decision);
-        
+
         // Create trade result
         const tradeResult = {
             decision: decision,
@@ -936,16 +965,19 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             message: outcome.message,
             client: this.currentClient.name
         };
-        
+
         // Complete client interaction
         this.gameState.completeClient(tradeResult);
-        
-        // Show outcome
-        this.showOutcome(outcome);
-        
+
+        // Hide opening statement bubble and then show outcome after animation completes
+        this.hideSpeechBubble();
+        this.time.delayedCall(350, () => {
+            this.showOutcome(outcome);
+        });
+
         // Update UI
         this.updateUI();
-        
+
         // Check if day is complete
         if (this.gameState.isDayComplete()) {
             this.time.delayedCall(3000, () => {
@@ -969,10 +1001,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         if (this.avatarHitbox) {
             this.avatarHitbox.removeInteractive();
         }
-        
+
         // Hide any speech bubbles
         this.hideSpeechBubble();
-        
+
         // Slide current client out
         this.tweens.add({
             targets: [this.clientAvatar, this.avatarHitbox],
@@ -997,31 +1029,31 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     completeDay() {
         // Show day summary
         const daySummary = this.gameState.getDaySummary();
-        
+
         // Create day summary modal container
         const summaryModal = this.add.container(0, 0);
         summaryModal.setDepth(200);
-        
+
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         summaryModal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 500;
         const modalHeight = 400;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(2, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         summaryModal.add(modalContent);
-        
+
         // Title
         const titleText = this.add.text(512, modalY + 60, `Day ${daySummary.day} Summary`, {
             fontSize: '24px',
@@ -1030,9 +1062,9 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         summaryModal.add(titleText);
-        
+
         // Summary content
-        const summaryText = this.add.text(512, modalY + 120, 
+        const summaryText = this.add.text(512, modalY + 120,
             `Reputation Change: ${daySummary.reputationChange > 0 ? '+' : ''}${daySummary.reputationChange}\n` +
             `Final Reputation: ${daySummary.finalReputation}\n` +
             `Trades Made: ${daySummary.trades.length}`, {
@@ -1043,7 +1075,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             align: 'center'
         }).setOrigin(0.5);
         summaryModal.add(summaryText);
-        
+
         // Continue button
         const continueButton = this.add.rectangle(512, modalY + 280, 120, 40, 0x00ff00);
         continueButton.setInteractive();
@@ -1052,7 +1084,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.startNextDay();
         });
         summaryModal.add(continueButton);
-        
+
         const continueButtonText = this.add.text(512, modalY + 280, 'Continue', {
             fontSize: '18px',
             color: '#000000',
@@ -1068,7 +1100,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.endGame();
             return;
         }
-        
+
         // Start new day
         this.gameState.startNewDay();
         this.updateUI();
@@ -1078,31 +1110,31 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     endGame() {
         // Show final score screen
         const finalSummary = this.gameState.getFinalSummary();
-        
+
         // Create final score modal container
         const finalModal = this.add.container(0, 0);
         finalModal.setDepth(200);
-        
+
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         finalModal.add(modalBg);
-        
+
         // Modal content
         const modalWidth = 500;
         const modalHeight = 400;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
-        
+
         const modalContent = this.add.graphics();
         modalContent.fillStyle(0x333333, 0.95);
         modalContent.lineStyle(2, 0xffffff, 1);
         modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
         finalModal.add(modalContent);
-        
+
         // Title
         const titleText = this.add.text(512, modalY + 60, 'Game Complete!', {
             fontSize: '24px',
@@ -1111,9 +1143,9 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 2
         }).setOrigin(0.5);
         finalModal.add(titleText);
-        
+
         // Final summary
-        const finalText = this.add.text(512, modalY + 120, 
+        const finalText = this.add.text(512, modalY + 120,
             `Final Reputation: ${finalSummary.finalReputation}\n` +
             `Total Trades: ${finalSummary.totalTrades}\n` +
             `Successful Trades: ${finalSummary.successfulTrades}`, {
@@ -1124,7 +1156,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             align: 'center'
         }).setOrigin(0.5);
         finalModal.add(finalText);
-        
+
         // Restart button
         const restartButton = this.add.rectangle(512, modalY + 280, 120, 40, 0x00ff00);
         restartButton.setInteractive();
@@ -1132,7 +1164,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.scene.restart();
         });
         finalModal.add(restartButton);
-        
+
         const restartButtonText = this.add.text(512, modalY + 280, 'Restart', {
             fontSize: '18px',
             color: '#000000',
@@ -1149,8 +1181,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.clientText.setText(`Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`);
     }
 
-    changeScene ()
-    {
+    changeScene() {
         this.scene.start('GameOver');
     }
 }
