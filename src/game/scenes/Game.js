@@ -91,6 +91,26 @@ export class Game extends Scene {
             this.paperLayers.push(layer);
         }
         
+        // Create computer animation layers - all positioned at the same location
+        this.computerLayers = [];
+        for (let i = 1; i <= 4; i++) {
+            const layer = this.add.image(512, 384, `computer${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.computerLayers.push(layer);
+        }
+        
+        // Create binders animation layers - all positioned at the same location
+        this.bindersLayers = [];
+        for (let i = 1; i <= 1; i++) {
+            const layer = this.add.image(512, 384, `binders${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.bindersLayers.push(layer);
+        }
+        
         // Store animation state
         this.keyboardAnimating = false;
         this.keyboardAnimationFrame = 0;
@@ -98,6 +118,11 @@ export class Game extends Scene {
         this.phoneAnimationFrame = 0;
         this.paperAnimating = false;
         this.paperAnimationFrame = 0;
+        this.computerAnimating = false;
+        this.computerAnimationFrame = 0;
+        this.bindersAnimating = false;
+        this.bindersAnimationFrame = 0;
+        this.bindersFrameDuration = 0;
     }
 
     animateKeyboard() {
@@ -165,8 +190,8 @@ export class Game extends Scene {
                 
                 this.phoneFrameDuration++;
                 
-                // If we've shown this frame for 2 cycles, move to next frame
-                if (this.phoneFrameDuration >= 2) {
+                // If we've shown this frame for 3 cycles, move to next frame
+                if (this.phoneFrameDuration >= 3) {
                     this.phoneAnimationFrame++;
                     this.phoneFrameDuration = 0;
                 }
@@ -223,6 +248,102 @@ export class Game extends Scene {
                 // Animation complete - hide all layers
                 this.paperLayers.forEach(layer => layer.setAlpha(0));
                 this.paperAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animateComputer() {
+        if (this.computerAnimating) return; // Prevent overlapping animations
+        
+        this.computerAnimating = true;
+        this.computerAnimationFrame = 0;
+        this.computerFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.computerLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.computerAnimationFrame < this.computerLayers.length) {
+                // Show current frame
+                this.computerLayers[this.computerAnimationFrame].setAlpha(1);
+                
+                // Hide previous frame (except for first frame)
+                if (this.computerAnimationFrame > 0) {
+                    this.computerLayers[this.computerAnimationFrame - 1].setAlpha(0);
+                }
+                
+                this.computerFrameDuration++;
+                
+                // If we've shown this frame for 2 cycles, move to next frame
+                if (this.computerFrameDuration >= 2) {
+                    this.computerAnimationFrame++;
+                    this.computerFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a short delay
+                this.time.delayedCall(100, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.computerLayers.forEach(layer => layer.setAlpha(0));
+                this.computerAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    hover_call() {
+        // Simply show the binders1 frame while hovering
+        this.bindersLayers.forEach(layer => layer.setAlpha(0));
+        this.bindersLayers[0].setAlpha(1); // Show binders1
+    }
+
+    animateBindersLong() {
+        if (this.bindersAnimating) return; // Prevent overlapping animations
+        
+        this.bindersAnimating = true;
+        this.bindersAnimationFrame = 0;
+        this.bindersFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.bindersLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animation sequence: normal background → binders1 → normal background
+        const sequence = [null, 'binders1', null];
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.bindersAnimationFrame < sequence.length) {
+                const currentFrame = sequence[this.bindersAnimationFrame];
+                
+                // Hide all layers first
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+                
+                // Show current frame if it's not null (normal background)
+                if (currentFrame) {
+                    const layerIndex = parseInt(currentFrame.replace('binders', '')) - 1;
+                    this.bindersLayers[layerIndex].setAlpha(1);
+                }
+                
+                this.bindersFrameDuration++;
+                
+                // If we've shown this frame for 5 cycles (longer), move to next frame
+                if (this.bindersFrameDuration >= 5) {
+                    this.bindersAnimationFrame++;
+                    this.bindersFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a longer delay
+                this.time.delayedCall(200, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+                this.bindersAnimating = false;
             }
         };
         
@@ -295,6 +416,10 @@ export class Game extends Scene {
                 this.animatePhone();
             } else if (key === 'newspaper') {
                 this.animatePaper();
+            } else if (key === 'computer') {
+                this.animateComputer();
+            } else if (key === 'binders') {
+                this.hover_call();
             }
         });
 
@@ -306,6 +431,11 @@ export class Game extends Scene {
                 duration: 200,
                 ease: 'Power2'
             });
+            
+            // Hide binders1 frame when not hovering
+            if (key === 'binders') {
+                this.bindersLayers.forEach(layer => layer.setAlpha(0));
+            }
         });
 
         // Store references for potential future use

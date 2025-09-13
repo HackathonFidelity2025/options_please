@@ -74,6 +74,15 @@ export class Preloader extends Scene
         this.load.image('paper1', 'backgrounds/paper/paper1.png');
         this.load.image('paper2', 'backgrounds/paper/paper2.png');
 
+        // Load computer background layers for animation
+        this.load.image('computer1', 'backgrounds/computer/computer1.png');
+        this.load.image('computer2', 'backgrounds/computer/computer2.png');
+        this.load.image('computer3', 'backgrounds/computer/computer3.png');
+        this.load.image('computer4', 'backgrounds/computer/computer4.png');
+
+        // Load binders background layers for animation
+        this.load.image('binders1', 'backgrounds/binders/binders1.png');
+
 
         // Load all client voices
         // this.load.audio('tech-bro', 'tech-bro.mp3');
