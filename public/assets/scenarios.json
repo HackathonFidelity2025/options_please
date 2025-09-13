@@ -72,8 +72,20 @@
         "charts": [
           {
             "type": "revenue",
-            "data": [100, 120, 150, 180, 220],
-            "labels": ["Q1", "Q2", "Q3", "Q4", "Projected"],
+            "data": [
+              100,
+              120,
+              150,
+              180,
+              220
+            ],
+            "labels": [
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4",
+              "Projected"
+            ],
             "title": "Graphics Makers Inc. Revenue Growth"
           }
         ]
@@ -109,12 +121,28 @@
         ],
         "charts": [
           {
-          "type": "trend",
-          "data": [85, 82, 78, 75, 68, 63, 50],
-          "labels": ["Mon", "Tue", "Wed", "Thu", "Fri", "Mon", "Tue"],
-          "title": "TerraFuel Corp. Stock Price Decline"
-        }
-      ]
+            "type": "trend",
+            "data": [
+              85,
+              82,
+              78,
+              75,
+              68,
+              63,
+              50
+            ],
+            "labels": [
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Mon",
+              "Tue"
+            ],
+            "title": "TerraFuel Corp. Stock Price Decline"
+          }
+        ]
       },
       "outcomes": {
         "call": {
@@ -164,6 +192,251 @@
           "success": true,
           "reputationChange": 2,
           "message": "Conservative play. The cocoa shortage made it impossible for Frosty Treats to meet demand."
+        }
+      }
+    },
+    {
+      "id": "codelogic_systems",
+      "client": "young_man",
+      "name": "Code Logic Systems announces layoffs",
+      "description": "CodeLogic Systems makes",
+      "openingStatement": "I’m not sure about CodeLogic Systems. They just made a big announcement",
+      "clues": {
+        "wordOfMouth": [
+          "A friend I know just got laid off from there."
+        ],
+        "newspaper": [
+          "CodeLogic Systems announces massive layoffs after overestimating growth."
+        ],
+        "charts": [
+          {
+            "type": "revenue",
+            "data": [
+              100,
+              120,
+              150,
+              180,
+              220
+            ],
+            "labels": [
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4",
+              "Projected"
+            ],
+            "title": "CodeLogic Revenue Growth"
+          }
+        ]
+      },
+      "outcomes": {
+        "call": {
+          "success": false,
+          "reputationChange": -12,
+          "message": "Bad Choice! The layoffs hurt the stock price!"
+        },
+        "put": {
+          "success": true,
+          "reputationChange": 10,
+          "message": "Nice job! The layoffs hurt CodeLogic and ruined predictions"
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": 2,
+          "message": "Conservative play. Layoffs are unpredictable in the market."
+        }
+      }
+    },
+    {
+      "id": "car_manufacturing",
+      "client": "old-man",
+      "name": "AeroMotors vs. SteelDrive",
+      "description": "AeroMotors vs. SteelDrive manufacturing",
+      "openingStatement": "I’ve heard AeroMotors is struggling, and SteelDrive is on the rise. What should I do about AeroMotors?",
+      "clues": {
+        "wordOfMouth": [
+          "Older models are fine, but the new ones are a disaster."
+        ],
+        "newspaper": [
+          "AeroMotors recalls vehicles due to crucial malfunctions."
+        ],
+        "charts": []
+      },
+      "outcomes": {
+        "call": {
+          "success": false,
+          "reputationChange": -20,
+          "message": "Terrible decision. It was proven that AeroMotors was falling apart."
+        },
+        "put": {
+          "success": true,
+          "reputationChange": 10,
+          "message": "Good job! The recalls really hurt AeroMotors."
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": -8,
+          "message": "Not the best choice. This was a guaranteed win."
+        }
+      }
+    },
+    {
+      "id": "novatech_scandal",
+      "client": "young-woman",
+      "name": "NovaTech Accounting Scandal",
+      "description": "NovatTech has been lying about their profits",
+      "openingStatement": "NovaTech’s been in trouble for scandals. But they just announced major growth. What do I do?",
+      "clues": {
+        "wordOfMouth": [
+          "Didn’t NovaTech just get caught fudging profits?"
+        ],
+        "newspaper": [
+          "NovaTech introduces new product despite accounting controversy."
+        ],
+        "charts": [
+          {
+            "type": "revenue",
+            "data": [
+              345,
+              300,
+              112,
+              158,
+              190
+            ],
+            "labels": [
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4",
+              "Projected"
+            ],
+            "title": "NovaTech Revenue Growth"
+          }
+        ]
+      },
+      "outcomes": {
+        "call": {
+          "success": true,
+          "reputationChange": 30,
+          "message": "Phenomenal play! Looks like NovaTech learned their lesson. Profits went up!"
+        },
+        "put": {
+          "success": false,
+          "reputationChange": -10,
+          "message": "Tough choice. The profits rose in spite of the controversy."
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": 10,
+          "message": "Way to play it safe. The stock rose, but it was hard to tell."
+        }
+      }
+    },
+    {
+      "id": "agri_tech",
+      "client": "shopkeeper",
+      "name": "AgriTech releases new harvester",
+      "description": "New harvester is going good",
+      "openingStatement": "AgriTech just released a new harvester. A lot of farmers are using it.",
+      "clues": {
+        "wordOfMouth": [
+          "My farming buddy says it breaks down constantly."
+        ],
+        "newspaper": [
+          "AgriTech’s new harvester dominates market, but complaints rising."
+        ],
+        "charts": [
+          {
+            "type": "revenue",
+            "data": [
+              90,
+              115,
+              128,
+              140,
+              168
+            ],
+            "labels": [
+              "Q1",
+              "Q2",
+              "Q3",
+              "Q4",
+              "Projected"
+            ],
+            "title": "AgriTech Steady Revenue Growth"
+          }
+        ]
+      },
+      "outcomes": {
+        "call": {
+          "success": false,
+          "reputationChange": -12,
+          "message": "Wrong call! Looks like the complaints were valid of the combines!."
+        },
+        "put": {
+          "success": true,
+          "reputationChange": 18,
+          "message": "Great work! The complaints really lead to a drop in stock price"
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": 2,
+          "message": "Conservative play. AgriTech stocks went down, but not by much."
+        }
+      }
+    },
+    {
+      "id": "zenith_corp",
+      "client": "sad-businessman",
+      "name": "Zenith Corp changes CEOs",
+      "description": "Zenith Corp frequently changes CEOs",
+      "openingStatement": "Zenith Corp. keeps swapping CEOs, but their numbers look okay this quarter.",
+      "clues": {
+        "wordOfMouth": [
+          "They change leaders every year… but this CEO seems more stable."
+        ],
+        "newspaper": [
+          "Zenith earnings slightly above expectations."
+        ],
+        "charts": [
+          {
+            "type": "trend",
+            "data": [
+              45,
+              68,
+              20,
+              10,
+              30,
+              32,
+              40
+            ],
+            "labels": [
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Mon",
+              "Tue"
+            ],
+            "title": "Zenith Corp. Stock Price fluctuations "
+          }
+        ]
+      },
+      "outcomes": {
+        "call": {
+          "success": true,
+          "reputationChange": 20,
+          "message": "Nice Move! The new CEO has major potential. I think Zenith Corp found what they needed."
+        },
+        "put": {
+          "success": false,
+          "reputationChange": -18,
+          "message": "Not a good choice The CEO makes big promises, the stock price increases with new hopes."
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": -8,
+          "message": "You held which was the safe choice, but there was money to be made"
         }
       }
     }
