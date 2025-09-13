@@ -74,7 +74,7 @@ export class Intro extends Scene {
         this.typeCurrentLine();
 
         // Logo (initially hidden, will fade in at the end)
-        this.logo = this.add.image(512, 400, 'logo').setVisible(false).setDepth(15).setScale(0.5);
+        this.logo = this.add.image(512, 400, 'logo-white').setVisible(false).setDepth(15).setScale(0.5);
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -158,6 +158,8 @@ export class Intro extends Scene {
     }
 
     showLogo() {
+        // theme song
+        this.sound.play('intro', { loop: true });
         // Hide the text and next button
         this.currentText.setVisible(false);
         this.hideNextButton();

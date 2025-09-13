@@ -15,8 +15,7 @@ export class MainMenu extends Scene
     {
         this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
 
-        // Play intro theme
-        this.sound.play('intro', { loop: true });
+        // Theme music continues from Intro scene (don't restart it here)
 
         // Play keyboard soft sound every 10 seconds
         this.keyboardTimer = this.time.addEvent({
@@ -38,6 +37,9 @@ export class MainMenu extends Scene
         // Add start button
         const startButton = this.add.rectangle(512, 550, 200, 60, 0x00ff00);
         startButton.setInteractive();
+        startButton.addListener('pointerover', () => {
+            this.sound.play('hover', { volume: 1 });
+        });
         startButton.on('pointerdown', () => this.changeScene());
         startButton.setDepth(100);
         

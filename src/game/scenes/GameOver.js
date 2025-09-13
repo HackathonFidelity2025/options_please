@@ -12,7 +12,6 @@ export class GameOver extends Scene
     {
         // Determine if this is a victory or defeat
         this.isVictory = data && data.victory === true;
-        this.isVictory = true;
         
         // Start with trading floor ambience, then fade to silence
         this.sound.stopAll();

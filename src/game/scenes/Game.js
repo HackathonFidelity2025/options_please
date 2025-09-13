@@ -1186,6 +1186,21 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     spawnClient() {
+        // Check if reputation is below 0 at the beginning of situation
+        if (this.gameState.reputationScore < 0) {
+            // Game over with defeat
+            this.scene.start('GameOver', { victory: false });
+            return;
+        }
+
+        // Check if we've exceeded the scenarios array length
+        if (this.gameState.scenarioCount >= this.scenarioManager.scenarios.length) {
+            // Game is over - calculate victory based on reputation
+            const victory = this.gameState.reputationScore > 30;
+            this.scene.start('GameOver', { victory: victory });
+            return;
+        }
+
         if (this.clientAvatar) {
             this.clientAvatar.destroy();
             this.avatarHitbox.destroy();
@@ -2253,6 +2268,21 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
  
     nextClient() {
+        // Check if reputation is below 0 at the beginning of situation
+        if (this.gameState.reputationScore < 0) {
+            // Game over with defeat
+            this.scene.start('GameOver', { victory: false });
+            return;
+        }
+
+        // Check if we've exceeded the scenarios array length
+        if (this.gameState.scenarioCount >= this.scenarioManager.scenarios.length) {
+            // Game is over - calculate victory based on reputation
+            const victory = this.gameState.reputationScore > 30;
+            this.scene.start('GameOver', { victory: victory });
+            return;
+        }
+
         // Check if we've completed all scenarios for the current day
         if (this.gameState.isDayComplete()) {
             this.completeDay();
@@ -2369,6 +2399,45 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             });
             yOffset += 10;
         });
+
+        // Reputation section
+        const reputationY = modalY + modalHeight - 220;
+        const daySummary = this.gameState.getDaySummary();
+        const reputationChange = daySummary.reputationChange;
+        const currentReputation = this.gameState.reputationScore;
+        
+        const reputationTitle = this.add.text(modalX + 20, reputationY, 'Professional Reputation:', {
+            fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#f39c12',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        analyticsModal.add(reputationTitle);
+        
+        // Reputation score display
+        const reputationText = this.add.text(modalX + 20, reputationY + 25, `Current Score: ${currentReputation}`, {
+            fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        analyticsModal.add(reputationText);
+        
+        // Reputation change display with color coding
+        if (reputationChange !== 0) {
+            const changeColor = reputationChange > 0 ? '#2ecc71' : '#e74c3c'; // Green for positive, red for negative
+            const changeSymbol = reputationChange > 0 ? '+' : '';
+            const changeText = this.add.text(modalX + 200, reputationY + 25, `(${changeSymbol}${reputationChange})`, {
+                fontSize: '16px',
+                fontFamily: 'Minecraft, Courier New, monospace',
+                color: changeColor,
+                stroke: '#000000',
+                strokeThickness: 1
+            });
+            analyticsModal.add(changeText);
+        }
 
         // Key insights section
         const insightsY = modalY + modalHeight - 160;

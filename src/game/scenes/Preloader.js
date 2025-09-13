@@ -33,6 +33,7 @@ export class Preloader extends Scene
         this.load.setPath('assets');
 
         this.load.image('logo', 'backgrounds/logo.png');
+        this.load.image('logo-white', 'backgrounds/logo_white.png');
         this.load.image('star', 'star.png');
 
         // Load all songs
