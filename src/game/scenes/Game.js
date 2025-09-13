@@ -168,6 +168,12 @@ export class Game extends Scene {
         // Create UI overlay elements
         this.createUIOverlay();
 
+        // Initialize interaction times
+        const currentTime = this.time.now;
+        Object.keys(this.lastInteractionTimes).forEach(key => {
+            this.lastInteractionTimes[key] = currentTime;
+        });
+
         // Start the first day
         this.startNewDay();
 
@@ -255,6 +261,70 @@ export class Game extends Scene {
         this.bindersAnimating = false;
         this.bindersAnimationFrame = 0;
         this.bindersFrameDuration = 0;
+        
+        // Track last interaction times for auto-animations
+        this.lastInteractionTimes = {
+            keyboard: 0,
+            phone: 0,
+            newspaper: 0,
+            computer: 0,
+            binders: 0
+        };
+        
+        // Auto-animation timers
+        this.autoAnimationTimers = {};
+        
+        // Start auto-animation system
+        this.startAutoAnimations();
+    }
+    
+    startAutoAnimations() {
+        // Set up auto-animation timers for each interactive element
+        const elements = ['keyboard', 'phone', 'newspaper', 'computer', 'binders'];
+        
+        elements.forEach(element => {
+            this.autoAnimationTimers[element] = this.time.addEvent({
+                delay: 5000, // Check every 5 seconds
+                callback: () => {
+                    this.checkAndTriggerAutoAnimation(element);
+                },
+                loop: true
+            });
+        });
+    }
+    
+    checkAndTriggerAutoAnimation(element) {
+        const currentTime = this.time.now;
+        const timeSinceLastInteraction = currentTime - this.lastInteractionTimes[element];
+        
+        // If it's been more than 15 seconds since last interaction, trigger animation
+        if (timeSinceLastInteraction > 15000) {
+            this.triggerAutoAnimation(element);
+        }
+    }
+    
+    triggerAutoAnimation(element) {
+        switch (element) {
+            case 'keyboard':
+                this.animateKeyboard();
+                break;
+            case 'phone':
+                this.animatePhone();
+                break;
+            case 'newspaper':
+                this.animatePaper();
+                break;
+            case 'computer':
+                this.animateComputer();
+                break;
+            case 'binders':
+                this.animateBindersLong();
+                break;
+        }
+    }
+    
+    updateInteractionTime(element) {
+        this.lastInteractionTimes[element] = this.time.now;
     }
 
     animateKeyboard() {
@@ -496,7 +566,11 @@ export class Game extends Scene {
         // Create the interactive rectangle (transparent background)
         this.clueElements[key] = this.add.rectangle(x, y, width, height, color, 0);
         this.clueElements[key].setInteractive();
-        this.clueElements[key].on('pointerdown', onClick);
+        this.clueElements[key].on('pointerdown', () => {
+            // Update interaction time on click
+            this.updateInteractionTime(key);
+            onClick();
+        });
         this.clueElements[key].setDepth(10);
 
         // Create the label positioned in the center of the element
@@ -531,6 +605,9 @@ export class Game extends Scene {
 
         // Add hover events to show/hide labels
         this.clueElements[key].on('pointerover', () => {
+            // Update interaction time
+            this.updateInteractionTime(key);
+            
             // Play hover sound
             this.sound.play('hover', { rate: 1 });
             // Show label on hover
@@ -2518,5 +2595,18 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
     changeScene() {
         this.scene.start('GameOver');
+    }
+    
+    destroy() {
+        // Clean up auto-animation timers
+        Object.values(this.autoAnimationTimers).forEach(timer => {
+            if (timer) {
+                timer.destroy();
+            }
+        });
+        this.autoAnimationTimers = {};
+        
+        // Call parent destroy method
+        super.destroy();
     }
 }
