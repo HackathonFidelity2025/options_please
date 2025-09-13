@@ -36,6 +36,24 @@ export class Game extends Scene {
         // Start the first day
         this.startNewDay();
 
+        // Loop background sound
+         // Play keyboard soft sound every 10 seconds
+         this.keyboardTimer = this.time.addEvent({
+            delay: 15000, // 15 seconds in milliseconds
+            callback: () => {
+                this.sound.play('keyboard-soft', { volume: 0.20, seek: 5 });
+            },
+            loop: true // Repeat indefinitely
+         });
+        this.printerTimer = this.time.addEvent({
+            delay: 30000, // 30 seconds in milliseconds
+            callback: () => {
+                this.sound.play('printer', { volume: 0.25, seek: 0 });
+            },
+            loop: true // Repeat indefinitely
+        });
+
+
         EventBus.emit('current-scene-ready', this);
     }
 
@@ -306,7 +324,8 @@ Your ability to analyze market signals, weigh risks, and provide sound recommend
             {
                 title: "Decision Options",
                 content: `
-• Call when you believe the company’s stock value is likely to rise in the future. This indicates a bullish outlook and positions your client to benefit from upward momentum.
+• Call
+when you believe the company’s stock value is likely to rise in the future. This indicates a bullish outlook and positions your client to benefit from upward momentum.
 
 • Put
 Select Put when you believe the company’s stock value is likely to decrease. This represents a bearish outlook and helps your client profit from downward movement.
@@ -317,8 +336,11 @@ Select Hold when the available information is inconclusive or the risks are too 
             {
                 title: "Evaluating Evidence",
                 content: `Every client will bring supporting materials for you to review. These may include:           
+
 • News Articles or Headlines – Reports of company announcements, product launches, or external factors such as regulatory changes.
+
 • Financial Charts – Data indicating projected revenue, industry performance, or analyst expectations.
+
 • Market Graphs – Historical and current stock trends that reveal potential trajectories.
 
 It is your responsibility to critically assess the reliability and relevance of this evidence. Some sources will be clear and credible, while others may present conflicting or incomplete information.
@@ -331,7 +353,7 @@ It is your responsibility to critically assess the reliability and relevance of 
 While these tips can help inform your decisions, be mindful of their reliability. Not all word of mouth is accurate, and poor judgment can have consequences for both you and your clients.`
             },
             {
-                title: "Evaluating Evidence",
+                title: "Your Professional Reputation",
                 content: `Your professional reputation is a direct reflection of the quality of the guidance you provide. Every recommendation you make—whether it results in a profit, a loss, or missed opportunity—impacts how clients, colleagues, and regulators perceive your advisory practice.           
 
 Key Insight: Reputation is not built overnight. Each client interaction contributes to your long-term standing. Protect it carefully, as it is the most valuable asset in your advisory career.
@@ -358,38 +380,38 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.guidebookModal.add(modalBg);
 
-        // Modal content
+        // Modal content - use handbook page image as background
         const modalWidth = 700;
-        const modalHeight = 500;
+        const modalHeight = 800;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
 
-        const modalContent = this.add.graphics();
-        modalContent.fillStyle(0x333333, 0.95);
-        modalContent.lineStyle(3, 0xffffff, 1);
-        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
-        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
-        this.guidebookModal.add(modalContent);
+        // Create handbook page background image
+        const handbookPage = this.add.image(512, 384, 'handbook-page');
+        handbookPage.setDisplaySize(modalWidth, modalHeight);
+        this.guidebookModal.add(handbookPage);
 
-        // Title
+        // Title - positioned to overlay nicely on the handbook page
         const currentPage = this.guidebookPages[this.currentGuidebookPage];
-        const titleText = this.add.text(512, modalY + 40, currentPage.title, {
+        const titleText = this.add.text(545, modalY + 85, currentPage.title, {
             fontSize: '28px',
-            color: '#ffffff',
-            stroke: '#000000',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#2c3e50', // Dark blue-gray for better contrast on paper
+            stroke: '#ffffff',
             strokeThickness: 2
         }).setOrigin(0.5);
         this.guidebookModal.add(titleText);
 
-        // Content
-        const contentText = this.add.text(512, modalY + 120, currentPage.content, {
+        // Content - positioned in the main content area of the handbook page
+        const contentText = this.add.text(530, modalY + 340, currentPage.content, {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#2c3e50', // Dark blue-gray for better readability on paper
+            stroke: '#ffffff',
             strokeThickness: 1,
-            wordWrap: { width: modalWidth - 40 },
-            align: 'left'
+            wordWrap: { width: modalWidth - 280 }, // More margin for paper effect
+            align: 'left',
+            lineSpacing: 4 // Better line spacing for readability
         }).setOrigin(0.5);
         this.guidebookModal.add(contentText);
 
@@ -398,72 +420,82 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.createGuidebookNavigation(modalX, modalY, modalWidth, modalHeight);
         }
 
-        // Close button
-        const closeButton = this.add.rectangle(512, modalY + 420, 120, 40, 0xff0000);
+        // Close button - styled to match the handbook page aesthetic
+        const closeButton = this.add.rectangle(530, modalY + 720, 120, 40, 0x8B4513); // Brown paper color
+        closeButton.setStrokeStyle(2, 0x654321); // Darker brown border
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => this.hideGuidebookModal());
         this.guidebookModal.add(closeButton);
 
-        const closeButtonText = this.add.text(512, modalY + 420, 'Close', {
+        const closeButtonText = this.add.text(530, modalY + 720, 'Close', {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#2c3e50', // Dark text for paper background
+            stroke: '#ffffff',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(closeButtonText);
 
         // Add hover effect to close button
         closeButton.on('pointerover', () => {
-            closeButton.setFillStyle(0xff3333);
+            closeButton.setFillStyle(0xA0522D); // Lighter brown on hover
         });
 
         closeButton.on('pointerout', () => {
-            closeButton.setFillStyle(0xff0000);
+            closeButton.setFillStyle(0x8B4513); // Back to original brown
         });
     }
 
     createGuidebookNavigation(modalX, modalY, modalWidth, modalHeight) {
-        const buttonY = modalY + 360;
+        const buttonY = modalY + 660;
         const buttonWidth = 80;
         const buttonHeight = 35;
 
-        // Previous button
-        const prevButton = this.add.rectangle(modalX + 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        // Previous button - styled for handbook page
+        const prevButton = this.add.rectangle(modalX + 200, buttonY, buttonWidth, buttonHeight, 0x8B4513); // Brown paper color
+        prevButton.setStrokeStyle(2, 0x654321); // Darker brown border
         prevButton.setInteractive();
-        prevButton.on('pointerdown', () => this.previousGuidebookPage());
+        prevButton.on('pointerdown', () => {
+            this.sound.play('paper-turn2', { rate: 0.8 });
+            this.previousGuidebookPage();
+        });
         this.guidebookModal.add(prevButton);
 
-        const prevButtonText = this.add.text(modalX + 100, buttonY, 'Previous', {
+        const prevButtonText = this.add.text(modalX + 200, buttonY, 'Previous', {
             fontSize: '14px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#2c3e50', // Dark text for paper background
+            stroke: '#ffffff',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(prevButtonText);
 
-        // Page indicator
-        const pageIndicator = this.add.text(512, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
+        // Page indicator - styled for handbook page
+        const pageIndicator = this.add.text(530, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#2c3e50', // Dark text for paper background
+            stroke: '#ffffff',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(pageIndicator);
 
-        // Next button
-        const nextButton = this.add.rectangle(modalX + modalWidth - 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        // Next button - styled for handbook page
+        const nextButton = this.add.rectangle(modalX + modalWidth - 150, buttonY, buttonWidth, buttonHeight, 0x8B4513); // Brown paper color
+        nextButton.setStrokeStyle(2, 0x654321); // Darker brown border
         nextButton.setInteractive();
-        nextButton.on('pointerdown', () => this.nextGuidebookPage());
+        nextButton.on('pointerdown', () => {
+            this.sound.play('paper-turn2', { rate: 0.8 });
+            this.nextGuidebookPage();
+
+        });
         this.guidebookModal.add(nextButton);
 
-        const nextButtonText = this.add.text(modalX + modalWidth - 100, buttonY, 'Next', {
+        const nextButtonText = this.add.text(modalX + modalWidth - 150, buttonY, 'Next', {
             fontSize: '14px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#2c3e50', // Dark text for paper background
+            stroke: '#ffffff',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(nextButtonText);
@@ -471,25 +503,25 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Update button states
         this.updateGuidebookNavigation(prevButton, nextButton, pageIndicator);
 
-        // Add hover effects
+        // Add hover effects - styled for handbook page
         prevButton.on('pointerover', () => {
             if (this.currentGuidebookPage > 0) {
-                prevButton.setFillStyle(0x666666);
+                prevButton.setFillStyle(0xA0522D); // Lighter brown on hover
             }
         });
 
         prevButton.on('pointerout', () => {
-            prevButton.setFillStyle(0x4a4a4a);
+            prevButton.setFillStyle(0x8B4513); // Back to original brown
         });
 
         nextButton.on('pointerover', () => {
             if (this.currentGuidebookPage < this.guidebookPages.length - 1) {
-                nextButton.setFillStyle(0x666666);
+                nextButton.setFillStyle(0xA0522D); // Lighter brown on hover
             }
         });
 
         nextButton.on('pointerout', () => {
-            nextButton.setFillStyle(0x4a4a4a);
+            nextButton.setFillStyle(0x8B4513); // Back to original brown
         });
     }
 

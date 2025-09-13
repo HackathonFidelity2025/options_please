@@ -56,6 +56,7 @@ export class Preloader extends Scene
 
         // Load all clue assets
         this.load.image('newspaper', 'newspaper-sprite.png');
+        this.load.image('handbook-page', 'handbook-page.png');
 
 
         // Load all client voices
@@ -71,8 +72,10 @@ export class Preloader extends Scene
         // Load all sound effects
         this.load.audio('hover', 'sounds/bloop.mp3');
         this.load.audio('keyboard-soft', 'sounds/keyboard-typing-soft.mp3');
+        this.load.audio('keyboard-hard', 'sounds/keyboard-typing-hard.mp3');
         this.load.audio('paper-turn', 'sounds/paper-turn.wav');
         this.load.audio('paper-turn2', 'sounds/paper-turn2.mp3');
+        this.load.audio('printer', 'sounds/printer.mp3');
     }
 
     create ()
