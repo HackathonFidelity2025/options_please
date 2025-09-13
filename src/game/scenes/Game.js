@@ -2138,6 +2138,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const continueButton = this.add.rectangle(512, modalY + modalHeight - 40, 140, 45, 0x27ae60);
         continueButton.setStrokeStyle(2, 0xffffff);
         continueButton.setInteractive();
+        continueButton.on('pointerover', () => {
+            this.sound.play('hover', { volume: 1 });
+            continueButton.setFillStyle(0x2ecc71);
+        });
         continueButton.on('pointerdown', () => {
             analyticsModal.destroy();
             this.startNextDay();
