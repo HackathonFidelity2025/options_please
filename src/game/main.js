@@ -1,6 +1,7 @@
 import { Boot } from './scenes/Boot';
 import { Game } from './scenes/Game';
 import { GameOver } from './scenes/GameOver';
+import { Intro } from './scenes/Intro';
 import { MainMenu } from './scenes/MainMenu';
 import Phaser from 'phaser';
 import { Preloader } from './scenes/Preloader';
@@ -22,6 +23,7 @@ const config = {
     scene: [
         Boot,
         Preloader,
+        Intro,
         MainMenu,
         Game,
         GameOver
