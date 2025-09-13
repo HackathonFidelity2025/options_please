@@ -182,7 +182,7 @@
           "A friend I know just got laid off from there."
         ],
         "newspaper": [
-          "CodeLogic Systems announces massive layoffs after overestimating growth."
+          "CodeLogic Systems announces massive layoffs!"
         ],
         "charts": [
           {
@@ -211,7 +211,7 @@
     },
     {
       "id": "car_manufacturing",
-      "client": "old-man",
+      "client": "old_man",
       "name": "AeroMotors vs. SteelDrive",
       "description": "AeroMotors vs. SteelDrive manufacturing",
       "openingStatement": "I’ve heard AeroMotors is struggling, and SteelDrive is on the rise. What should I do about AeroMotors?",
@@ -244,7 +244,7 @@
     },
     {
       "id": "novatech_scandal",
-      "client": "young-woman",
+      "client": "young_woman",
       "name": "NovaTech Accounting Scandal",
       "description": "NovatTech has been lying about their profits",
       "riskFactor": 9,
@@ -254,7 +254,7 @@
           "Didn’t NovaTech just get caught fudging profits?"
         ],
         "newspaper": [
-          "NovaTech introduces new product despite accounting controversy."
+          "NovaTech introduce products despite accounting controversy."
         ],
         "charts": [
           {
@@ -292,7 +292,7 @@
           "My farming buddy says it breaks down constantly."
         ],
         "newspaper": [
-          "AgriTech’s new harvester dominates market, but complaints rising."
+          "AgriTech’s new harvester dominates market amid complaints."
         ],
         "charts": [
           {
@@ -321,7 +321,7 @@
     },
     {
       "id": "zenith_corp",
-      "client": "sad-businessman",
+      "client": "sad_businessman",
       "name": "Zenith Corp changes CEOs",
       "description": "Zenith Corp frequently changes CEOs",
       "openingStatement": "Zenith Corp. keeps swapping CEOs, but their numbers look okay this quarter.",
