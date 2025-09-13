@@ -1258,7 +1258,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
     spawnClient() {
         // Check if reputation is below 0 at the beginning of situation
-        if (this.gameState.reputationScore < 0) {
+        if (this.gameState.reputationScore <= 0) {
             // Game over with defeat
             this.scene.start('GameOver', { victory: false });
             return;

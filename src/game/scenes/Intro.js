@@ -21,7 +21,7 @@ export class Intro extends Scene {
             "Decide whether to CALL, PUT, or HOLD.",
             "Be vigilant.",
             "A poor recommendation risks not only your client's trust,",
-            "but the stability of the entire desk.",
+            "but the stability of the entire Desk.",
             "The clients are waiting.",
             "Options, Please."
         ];
