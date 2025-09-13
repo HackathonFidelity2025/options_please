@@ -74,7 +74,7 @@ export class Intro extends Scene {
         this.typeCurrentLine();
 
         // Logo (initially hidden, will fade in at the end)
-        this.logo = this.add.image(512, 200, 'logo').setVisible(false).setDepth(15).setScale(0.5);
+        this.logo = this.add.image(512, 400, 'logo').setVisible(false).setDepth(15).setScale(0.5);
 
         EventBus.emit('current-scene-ready', this);
     }
