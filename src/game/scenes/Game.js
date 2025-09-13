@@ -36,6 +36,24 @@ export class Game extends Scene {
         // Start the first day
         this.startNewDay();
 
+        // Loop background sound
+         // Play keyboard soft sound every 10 seconds
+         this.keyboardTimer = this.time.addEvent({
+            delay: 15000, // 15 seconds in milliseconds
+            callback: () => {
+                this.sound.play('keyboard-soft', { volume: 0.20, seek: 5 });
+            },
+            loop: true // Repeat indefinitely
+         });
+        this.printerTimer = this.time.addEvent({
+            delay: 30000, // 30 seconds in milliseconds
+            callback: () => {
+                this.sound.play('printer', { volume: 0.25, seek: 0 });
+            },
+            loop: true // Repeat indefinitely
+        });
+
+
         EventBus.emit('current-scene-ready', this);
     }
 
