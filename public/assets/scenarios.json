@@ -1,7 +1,66 @@
 {
+  "clients": [
+    {
+      "id": "tech_bro",
+      "name": "Tech Bro",
+      "description": "A tech bro who is interested in investing in a tech startup",
+      "avatar": "tech-bro.png",
+      "voice": "tech-bro.mp3"
+    },
+    {
+      "id": "man",
+      "name": "Man",
+      "description": "A man who is interested in investing in a tech startup",
+      "avatar": "man.png",
+      "voice": "man.mp3"
+    },
+    {
+      "id": "woman",
+      "name": "Woman",
+      "description": "A woman who is interested in investing in a tech startup",
+      "avatar": "woman.png",
+      "voice": "woman.mp3"
+    },
+    {
+      "id": "young_woman",
+      "name": "Young Woman",
+      "description": "A young woman who is interested in investing in a tech startup",
+      "avatar": "young-woman.png",
+      "voice": "young-woman.mp3"
+    },
+    {
+      "id": "young_man",
+      "name": "Young Man",
+      "description": "A young man who is interested in investing in a tech startup",
+      "avatar": "young-man.png",
+      "voice": "young-man.mp3"
+    },
+    {
+      "id": "old_man",
+      "name": "Old Man",
+      "description": "An old man who is interested in investing in a tech startup",
+      "avatar": "old-man.png",
+      "voice": "old-man.mp3"
+    },
+    {
+      "id": "sad_businessman",
+      "name": "Sad Businessman",
+      "description": "A sad businessman who is interested in investing in a tech startup",
+      "avatar": "sad-businessman.png",
+      "voice": "sad-businessman.mp3"
+    },
+    {
+      "id": "shopkeeper",
+      "name": "Shopkeeper",
+      "description": "A shopkeeper who is interested in investing in a tech startup",
+      "avatar": "shopkeeper.png",
+      "voice": "shopkeeper.mp3"
+    }
+  ],
   "scenarios": [
     {
       "id": "tech_startup_ipo",
+      "client": "tech_bro",
       "name": "TechCorp IPO",
       "description": "A hot new tech startup is going public",
       "openingStatement": "Hey! I've got some insider info about TechCorp's upcoming IPO. This could be huge!",
@@ -53,6 +112,7 @@
     },
     {
       "id": "pharma_trial_results",
+      "client": "man",
       "name": "MediPharm Clinical Trial",
       "description": "A pharmaceutical company's drug trial results are about to be released",
       "openingStatement": "I heard some concerning things about MediPharm's latest drug trial. This could go either way.",
@@ -104,6 +164,7 @@
     },
     {
       "id": "energy_merger",
+      "client": "woman",
       "name": "EnergyCorp Merger",
       "description": "Two energy companies are rumored to be merging",
       "openingStatement": "Big news in the energy sector! EnergyCorp and PowerMax might be joining forces.",

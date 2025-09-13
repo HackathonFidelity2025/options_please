@@ -2,6 +2,7 @@ export class ScenarioManager {
     constructor(scene) {
         this.scene = scene;
         this.scenarios = [];
+        this.clients = [];
         this.usedScenarios = new Set();
         this.loadScenarios();
     }
@@ -11,6 +12,7 @@ export class ScenarioManager {
         if (this.scene && this.scene.cache.json.has('scenarios')) {
             const scenariosData = this.scene.cache.json.get('scenarios');
             this.scenarios = scenariosData.scenarios;
+            this.clients = scenariosData.clients;
         }
     }
 
@@ -74,5 +76,18 @@ export class ScenarioManager {
         }
 
         return scenario.outcomes[decision];
+    }
+
+    // Get client data by ID
+    getClientById(clientId) {
+        return this.clients.find(client => client.id === clientId);
+    }
+
+    // Get client data for a scenario
+    getScenarioClient(scenario) {
+        if (!scenario || !scenario.client) {
+            return null;
+        }
+        return this.getClientById(scenario.client);
     }
 }

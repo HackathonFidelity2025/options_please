@@ -34,7 +34,16 @@ export class Preloader extends Scene
 
         this.load.image('logo', 'logo.png');
         this.load.image('star', 'star.png');
+        
+        // Load all client avatars
         this.load.image('tech-bro', 'tech-bro.png');
+        this.load.image('man', 'man.png');
+        this.load.image('woman', 'woman.png');
+        this.load.image('young-woman', 'young-woman.png');
+        this.load.image('young-man', 'young-man.png');
+        this.load.image('old-man', 'old-man.png');
+        this.load.image('sad-businessman', 'sad-businessman.png');
+        this.load.image('shopkeeper', 'shopkeeper.png');
         
         // Load scenario data
         this.load.json('scenarios', 'scenarios.json');

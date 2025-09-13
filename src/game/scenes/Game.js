@@ -172,8 +172,14 @@ export class Game extends Scene
         // Get a random scenario
         this.currentClient = this.scenarioManager.getRandomScenario();
         
-        // Create client avatar (using tech-bro image)
-        this.clientAvatar = this.add.image(-200, 326, 'tech-bro');
+        // Get client data for this scenario
+        const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
+        
+        // Use client avatar or fallback to tech-bro
+        const avatarKey = clientData ? clientData.avatar.replace('.png', '') : 'tech-bro';
+        
+        // Create client avatar using dynamic image
+        this.clientAvatar = this.add.image(-200, 326, avatarKey);
         this.clientAvatar.setOrigin(0.5);
         this.clientAvatar.setScale(0.3);
         this.clientAvatar.setDepth(50);
