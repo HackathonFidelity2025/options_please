@@ -73,6 +73,21 @@ function App ()
     return (
         <div id="app">
             <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
+            <div>
+                <div>
+                    <div className="" onClick={changeScene}></div>
+                </div>
+                <div>
+    
+                </div>
+                <div className="spritePosition minecraft-font">
+                    
+                </div>
+                <div>
+                    <button className="button" onClick={addSprite}></button>
+                </div>
+            </div>
+
         </div>
     )
 }

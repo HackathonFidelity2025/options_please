@@ -48,7 +48,7 @@ body {
     padding: 10px;
     background-color: #000000;
     color: rgba(255, 255, 255, 0.87);
-    border: 1px solid rgba(255, 255, 255, 0.87);
+    border: 1px solid #000000;
     cursor: pointer;
     transition: all 0.3s;
 
