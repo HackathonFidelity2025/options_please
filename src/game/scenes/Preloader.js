@@ -92,6 +92,8 @@ export class Preloader extends Scene
         this.load.audio('paper-turn', 'sounds/paper-turn.wav');
         this.load.audio('paper-turn2', 'sounds/paper-turn2.mp3');
         this.load.audio('printer', 'sounds/printer.mp3');
+        this.load.audio('knock', 'sounds/knock-on-a-door.mp3');
+        this.load.audio('stamp', 'sounds/stamp.mp3');
     }
 
     create ()
@@ -101,6 +103,6 @@ export class Preloader extends Scene
 
         //  Move to the Intro scene. You could also swap this for a Scene Transition, such as a camera fade.
         //this.scene.start('Intro');
-        this.scene.start('MainMenu');
+        this.scene.start('GameOver');
     }
 }
