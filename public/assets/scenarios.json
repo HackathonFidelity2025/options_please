@@ -74,7 +74,7 @@
       "riskFactor": 3,
       "openingStatement": "I've been watching GPU Makers Inc. closely. Their graphics chips are everywhere in gaming and AI. What do you think of their stock?",
       "clues": {
-        "wordOfMouth": ["testing word out mouth. remove later"],
+        "wordOfMouth": [],
         "newspaper": [
           "GPU Makers Inc. earnings report 3x higher than expected."
         ],

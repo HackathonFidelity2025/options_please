@@ -27,7 +27,7 @@ export class MainMenu extends Scene
             loop: true // Repeat indefinitely
         });
 
-        this.logo = this.add.image(512, 300, 'logo').setDepth(100);
+        this.logo = this.add.image(512, 300, 'logo').setDepth(100).setScale(0.6);
 
         this.add.text(512, 460, 'Options Trading Game', {
             fontFamily: 'Minecraft', fontSize: 38, color: '#ffffff',

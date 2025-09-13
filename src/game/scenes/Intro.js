@@ -74,7 +74,7 @@ export class Intro extends Scene {
         this.typeCurrentLine();
 
         // Logo (initially hidden, will fade in at the end)
-        this.logo = this.add.image(512, 200, 'logo').setVisible(false).setDepth(15);
+        this.logo = this.add.image(512, 200, 'logo').setVisible(false).setDepth(15).setScale(0.5);
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -165,7 +165,7 @@ export class Intro extends Scene {
         // Show and fade in the logo
         this.logo.setVisible(true);
         this.logo.setAlpha(0);
-        this.logo.setScale(0.8);
+        this.logo.setScale(0.4);
 
         // Play a subtle sound effect
         this.sound.play('hover', { volume: 0.5 });
@@ -173,7 +173,7 @@ export class Intro extends Scene {
         this.tweens.add({
             targets: this.logo,
             alpha: 1,
-            scale: 1,
+            scale: 0.6,
             duration: 2000,
             ease: 'Power2',
             onComplete: () => {

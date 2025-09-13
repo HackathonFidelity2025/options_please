@@ -944,6 +944,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         this.dayStartModal.add(startButtonText);
+
+        // Add hover effect to start button
+        startButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: [startButton, startButtonText],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        startButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: [startButton, startButtonText],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
     }
 
     hideDayStartModal() {
@@ -1058,8 +1079,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.bubbleText.setDepth(76);
 
         // Add red X close button
-        const closeX = bubbleX + bubbleWidth / 2 - 20;
-        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        const closeX = bubbleX + bubbleWidth / 2 - 16;
+        const closeY = bubbleY - bubbleHeight / 2 + 16;
         
         this.speechBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
         this.speechBubbleCloseButton.setInteractive();
@@ -1156,7 +1177,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Add red X close button
         const closeX = bubbleX + bubbleWidth / 2 - 20;
-        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        const closeY = bubbleY - bubbleHeight / 2 + 25;
         
         this.phoneBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
         this.phoneBubbleCloseButton.setInteractive();
@@ -1668,93 +1689,254 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
         this.decisionModal.add(modalBg);
 
-        // Modal content
-        const modalWidth = 500;
-        const modalHeight = 300;
+        // Paper-like modal content - long and narrow
+        const modalWidth = 700;
+        const modalHeight = 450;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
 
+        // Paper background with cream color
         const modalContent = this.add.graphics();
-        modalContent.fillStyle(0x333333, 0.95);
-        modalContent.lineStyle(2, 0xffffff, 1);
-        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
-        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
+        modalContent.fillStyle(0xF5F5DC, 0.95); // Cream color
+        modalContent.lineStyle(2, 0x000000, 1); // Black border
+        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 5);
+        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 5);
         this.decisionModal.add(modalContent);
 
+        // Add paper texture lines
+        for (let i = 0; i < 8; i++) {
+            const lineY = modalY + 80 + (i * 25);
+            const line = this.add.graphics();
+            line.lineStyle(1, 0xE0E0E0, 0.3); // Light grey lines
+            line.beginPath();
+            line.moveTo(modalX + 40, lineY);
+            line.lineTo(modalX + modalWidth - 40, lineY);
+            line.strokePath();
+            this.decisionModal.add(line);
+        }
+
         // Title
-        const titleText = this.add.text(512, modalY + 60, 'Make Your Decision', {
-            fontSize: '24px',
+        const titleText = this.add.text(512, modalY + 50, 'INVESTMENT RECOMMENDATION', {
+            fontSize: '28px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
+            color: '#000000',
+            fontStyle: 'bold',
             stroke: '#000000',
-            strokeThickness: 2
+            strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(titleText);
 
-        // Decision buttons
-        const buttonY = modalY + 150;
+        // Decision buttons - vertically stacked (bigger)
+        const buttonWidth = 320;
+        const buttonHeight = 80;
+        const buttonSpacing = 25;
+        const startX = modalX + (modalWidth - buttonWidth) / 2;
+        const startY = modalY + 130;
 
-        // Call button
-        const callButton = this.add.rectangle(modalX + 100, buttonY, 80, 40, 0x00ff00);
+        // Call button (L-shaped border only)
+        const callButton = this.add.rectangle(startX + buttonWidth/2, startY, buttonWidth, buttonHeight, 0x000000, 0); // Transparent fill
+        callButton.setStrokeStyle(3, 0x000000);
         callButton.setInteractive();
         callButton.on('pointerdown', () => this.makeDecision('call'));
         this.decisionModal.add(callButton);
 
-        const callButtonText = this.add.text(modalX + 100, buttonY, 'Call', {
-            fontSize: '18px',
+        // Draw L-shaped border for Call button
+        const callButtonGraphics = this.add.graphics();
+        callButtonGraphics.lineStyle(4, 0x000000, 1);
+        callButtonGraphics.beginPath();
+        callButtonGraphics.moveTo(startX, startY - buttonHeight/2); // Top left
+        callButtonGraphics.lineTo(startX + buttonWidth, startY - buttonHeight/2); // Top right
+        callButtonGraphics.lineTo(startX + buttonWidth, startY + buttonHeight/2); // Bottom right
+        callButtonGraphics.lineTo(startX, startY + buttonHeight/2); // Bottom left
+        callButtonGraphics.lineTo(startX, startY - buttonHeight/2 + 20); // Back up to create L shape
+        callButtonGraphics.strokePath();
+        this.decisionModal.add(callButtonGraphics);
+
+        // Call button hover fill
+        const callButtonFill = this.add.graphics();
+        callButtonFill.fillStyle(0x404040, 0.4); // Dark grey fill
+        callButtonFill.fillRoundedRect(startX + 2, startY - buttonHeight/2 + 2, buttonWidth - 4, buttonHeight - 4, 2);
+        callButtonFill.setAlpha(0); // Start hidden
+        this.decisionModal.add(callButtonFill);
+
+        const callButtonText = this.add.text(startX + buttonWidth/2, startY, 'CALL', {
+            fontSize: '26px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
-            stroke: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(callButtonText);
 
-        // Put button
-        const putButton = this.add.rectangle(modalX + 250, buttonY, 80, 40, 0xff0000);
+        // Call button hover effects
+        callButton.on('pointerover', () => {
+            callButtonFill.setAlpha(1);
+            this.tweens.add({
+                targets: [callButton, callButtonGraphics, callButtonText, callButtonFill],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        callButton.on('pointerout', () => {
+            callButtonFill.setAlpha(0);
+            this.tweens.add({
+                targets: [callButton, callButtonGraphics, callButtonText, callButtonFill],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        // Put button (L-shaped border only)
+        const putButton = this.add.rectangle(startX + buttonWidth/2, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight, 0x000000, 0); // Transparent fill
+        putButton.setStrokeStyle(3, 0x000000);
         putButton.setInteractive();
         putButton.on('pointerdown', () => this.makeDecision('put'));
         this.decisionModal.add(putButton);
 
-        const putButtonText = this.add.text(modalX + 250, buttonY, 'Put', {
-            fontSize: '18px',
+        // Draw L-shaped border for Put button
+        const putButtonGraphics = this.add.graphics();
+        putButtonGraphics.lineStyle(4, 0x000000, 1);
+        putButtonGraphics.beginPath();
+        putButtonGraphics.moveTo(startX, startY + buttonHeight + buttonSpacing - buttonHeight/2); // Top left
+        putButtonGraphics.lineTo(startX + buttonWidth, startY + buttonHeight + buttonSpacing - buttonHeight/2); // Top right
+        putButtonGraphics.lineTo(startX + buttonWidth, startY + buttonHeight + buttonSpacing + buttonHeight/2); // Bottom right
+        putButtonGraphics.lineTo(startX, startY + buttonHeight + buttonSpacing + buttonHeight/2); // Bottom left
+        putButtonGraphics.lineTo(startX, startY + buttonHeight + buttonSpacing - buttonHeight/2 + 20); // Back up to create L shape
+        putButtonGraphics.strokePath();
+        this.decisionModal.add(putButtonGraphics);
+
+        // Put button hover fill
+        const putButtonFill = this.add.graphics();
+        putButtonFill.fillStyle(0x404040, 0.4); // Dark grey fill
+        putButtonFill.fillRoundedRect(startX + 2, startY + buttonHeight + buttonSpacing - buttonHeight/2 + 2, buttonWidth - 4, buttonHeight - 4, 2);
+        putButtonFill.setAlpha(0); // Start hidden
+        this.decisionModal.add(putButtonFill);
+
+        const putButtonText = this.add.text(startX + buttonWidth/2, startY + buttonHeight + buttonSpacing, 'PUT', {
+            fontSize: '26px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
+            color: '#000000',
+            fontStyle: 'bold',
             stroke: '#000000',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(putButtonText);
 
-        // Hold button
-        const holdButton = this.add.rectangle(modalX + 400, buttonY, 80, 40, 0xffff00);
+        // Put button hover effects
+        putButton.on('pointerover', () => {
+            putButtonFill.setAlpha(1);
+            this.tweens.add({
+                targets: [putButton, putButtonGraphics, putButtonText, putButtonFill],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        putButton.on('pointerout', () => {
+            putButtonFill.setAlpha(0);
+            this.tweens.add({
+                targets: [putButton, putButtonGraphics, putButtonText, putButtonFill],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        // Hold button (L-shaped border only)
+        const holdButton = this.add.rectangle(startX + buttonWidth/2, startY + (buttonHeight + buttonSpacing) * 2, buttonWidth, buttonHeight, 0x000000, 0); // Transparent fill
+        holdButton.setStrokeStyle(3, 0x000000);
         holdButton.setInteractive();
         holdButton.on('pointerdown', () => this.makeDecision('hold'));
         this.decisionModal.add(holdButton);
 
-        const holdButtonText = this.add.text(modalX + 400, buttonY, 'Hold', {
-            fontSize: '18px',
+        // Draw L-shaped border for Hold button
+        const holdButtonGraphics = this.add.graphics();
+        holdButtonGraphics.lineStyle(4, 0x000000, 1);
+        holdButtonGraphics.beginPath();
+        holdButtonGraphics.moveTo(startX, startY + (buttonHeight + buttonSpacing) * 2 - buttonHeight/2); // Top left
+        holdButtonGraphics.lineTo(startX + buttonWidth, startY + (buttonHeight + buttonSpacing) * 2 - buttonHeight/2); // Top right
+        holdButtonGraphics.lineTo(startX + buttonWidth, startY + (buttonHeight + buttonSpacing) * 2 + buttonHeight/2); // Bottom right
+        holdButtonGraphics.lineTo(startX, startY + (buttonHeight + buttonSpacing) * 2 + buttonHeight/2); // Bottom left
+        holdButtonGraphics.lineTo(startX, startY + (buttonHeight + buttonSpacing) * 2 - buttonHeight/2 + 20); // Back up to create L shape
+        holdButtonGraphics.strokePath();
+        this.decisionModal.add(holdButtonGraphics);
+
+        // Hold button hover fill
+        const holdButtonFill = this.add.graphics();
+        holdButtonFill.fillStyle(0x404040, 0.4); // Dark grey fill
+        holdButtonFill.fillRoundedRect(startX + 2, startY + (buttonHeight + buttonSpacing) * 2 - buttonHeight/2 + 2, buttonWidth - 4, buttonHeight - 4, 2);
+        holdButtonFill.setAlpha(0); // Start hidden
+        this.decisionModal.add(holdButtonFill);
+
+        const holdButtonText = this.add.text(startX + buttonWidth/2, startY + (buttonHeight + buttonSpacing) * 2, 'HOLD', {
+            fontSize: '26px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
+            fontStyle: 'bold',
             stroke: '#000000',
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(holdButtonText);
 
-        // Close button
-        const closeButton = this.add.rectangle(512, modalY + 220, 100, 30, 0x666666);
+        // Hold button hover effects
+        holdButton.on('pointerover', () => {
+            holdButtonFill.setAlpha(1);
+            this.tweens.add({
+                targets: [holdButton, holdButtonGraphics, holdButtonText, holdButtonFill],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        holdButton.on('pointerout', () => {
+            holdButtonFill.setAlpha(0);
+            this.tweens.add({
+                targets: [holdButton, holdButtonGraphics, holdButtonText, holdButtonFill],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        // Close button - styled like other modal close buttons
+        const closeButton = this.add.rectangle(512, modalY + modalHeight - 40, 120, 40, 0x8B4513);
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => {
             this.hideDecisionModal();
         });
         this.decisionModal.add(closeButton);
 
-        const closeButtonText = this.add.text(512, modalY + 220, 'Close', {
-            fontSize: '16px',
+        const closeButtonText = this.add.text(512, modalY + modalHeight - 40, 'Close', {
+            fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
+            fontStyle: 'bold',
             stroke: '#000000',
-            strokeThickness: 1
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.decisionModal.add(closeButtonText);
+
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D); // Lighter brown on hover
+        });
+
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513); // Back to original brown
+        });
     }
 
     hideDecisionModal() {
@@ -1801,17 +1983,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         this.gameState.scenarioCount++;
 
-        // Check if day is complete
-        if (this.gameState.isDayComplete()) {
-            this.time.delayedCall(3000, () => {
-                this.completeDay();
-            });
-        } else {
-            // Move to next client
-            this.time.delayedCall(3000, () => {
-                this.nextClient();
-            });
-        }
+        // Move to next client (nextClient will handle day completion check)
+        this.time.delayedCall(3000, () => {
+            this.nextClient();
+        });
     }
 
     showOutcome(outcome) {
@@ -1846,6 +2021,12 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
  
     nextClient() {
+        // Check if we've completed all scenarios for the current day
+        if (this.gameState.isDayComplete()) {
+            this.completeDay();
+            return;
+        }
+
         // Remove interaction from current client
         if (this.avatarHitbox) {
             this.avatarHitbox.removeInteractive();
@@ -1855,7 +2036,6 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.hideSpeechBubble();
         this.hidePhoneBubble();
         this.removeAvatar();
-
     }
 
     completeDay() {
@@ -1929,6 +2109,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         summaryModal.add(continueButtonText);
+
+        // Add hover effect to continue button
+        continueButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: [continueButton, continueButtonText],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        continueButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: [continueButton, continueButtonText],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
     }
 
     startNextDay() {
@@ -2009,6 +2210,27 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             strokeThickness: 1
         }).setOrigin(0.5);
         finalModal.add(restartButtonText);
+
+        // Add hover effect to restart button
+        restartButton.on('pointerover', () => {
+            this.tweens.add({
+                targets: [restartButton, restartButtonText],
+                x: '-=2',
+                y: '+=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
+
+        restartButton.on('pointerout', () => {
+            this.tweens.add({
+                targets: [restartButton, restartButtonText],
+                x: '+=2',
+                y: '-=2',
+                duration: 100,
+                ease: 'Power2'
+            });
+        });
     }
 
     updateUI() {
