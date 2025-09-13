@@ -990,7 +990,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             ease: 'Back.easeOut',
             onComplete: () => {
                 // Play client voice
-                this.sound.play("old-man", { rate: 1 });
+                this.sound.play(clientData.voice, { rate: 1 });
                 // Create avatar label after positioning is complete
                 this.createAvatarLabel();
                 this.showClientOpeningStatement();
@@ -1335,10 +1335,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Risk Factor Section
         const riskY = descY + 60;
         const riskFactor = clientData ? clientData.riskFactor : 'N/A';
-        console.log('Client risk factor:', riskFactor);
+        console.log('Client risk tolerance:', riskFactor);
         const riskColor = riskFactor >= 7 ? '#e74c3c' : riskFactor >= 4 ? '#f39c12' : '#27ae60'; // Red for high, orange for medium, green for low
         
-        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK FACTOR:', {
+        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK TOLERANCE:', {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#f39c12',

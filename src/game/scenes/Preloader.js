@@ -91,14 +91,14 @@ export class Preloader extends Scene
 
 
         // Load all client voices
-        // this.load.audio('tech-bro', 'tech-bro.mp3');
-        // this.load.audio('man', 'man.mp3');
-        // this.load.audio('woman', 'woman.mp3');
-        // this.load.audio('young-woman', 'young-woman.mp3');
-        // this.load.audio('young-man', 'young-man.mp3');
+        this.load.audio('tech-bro', 'sounds/tech-bro.m4a');
+        this.load.audio('man', 'sounds/man.m4a');
+        this.load.audio('woman', 'sounds/woman.m4a');
+        this.load.audio('young-woman', 'sounds/young-woman.m4a');
+        this.load.audio('young-man', 'sounds/young-man.m4a');
         this.load.audio('old-man', 'sounds/old-man.m4a');
-        // this.load.audio('sad-businessman', 'sad-businessman.m4a');
-        // this.load.audio('shopkeeper', 'shopkeeper.mp3');
+        this.load.audio('sad-businessman', 'sounds/sad-businessman.m4a');
+        this.load.audio('shopkeeper', 'sounds/shopkeeper.m4a');
 
         // Load all sound effects
         this.load.audio('hover', 'sounds/bloop.mp3');
