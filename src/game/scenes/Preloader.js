@@ -47,6 +47,9 @@ export class Preloader extends Scene
         this.load.image('old-man', 'old-man.png');
         this.load.image('sad-businessman', 'sad-businessman.png');
         this.load.image('shopkeeper', 'shopkeeper.png');
+
+        // Load handbook image
+        this.load.image('handbook', 'handbook.png');
         
         // Load scenario data
         this.load.json('scenarios', 'scenarios.json');
