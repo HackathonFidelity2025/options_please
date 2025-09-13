@@ -40,6 +40,10 @@ export class ScenarioManager {
         return this.scenarios.find(scenario => scenario.id === id);
     }
 
+    getScenarioByScenarioCount(index) {
+        return this.scenarios[index];
+    }
+
     // Get all available scenarios
     getAllScenarios() {
         return this.scenarios;

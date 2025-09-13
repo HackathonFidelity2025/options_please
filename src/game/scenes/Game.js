@@ -27,8 +27,8 @@ export class Game extends Scene {
         // Set up the main game background
         this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
 
-        // Create keyboard animation layers
-        this.createKeyboardLayers();
+        // Create background animation layers
+        this.createBackgroundLayers();
 
         // Create the desk and UI elements
         this.createDeskElements();
@@ -42,7 +42,7 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     }
 
-    createKeyboardLayers() {
+    createBackgroundLayers() {
         // Create keyboard animation layers - all positioned at the same location
         this.keyboardLayers = [];
         for (let i = 1; i <= 4; i++) {
@@ -53,9 +53,33 @@ export class Game extends Scene {
             this.keyboardLayers.push(layer);
         }
         
+        // Create phone animation layers - all positioned at the same location
+        this.phoneLayers = [];
+        for (let i = 1; i <= 4; i++) {
+            const layer = this.add.image(512, 384, `phone${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.phoneLayers.push(layer);
+        }
+        
+        // Create paper animation layers - all positioned at the same location
+        this.paperLayers = [];
+        for (let i = 1; i <= 2; i++) {
+            const layer = this.add.image(512, 384, `paper${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.paperLayers.push(layer);
+        }
+        
         // Store animation state
         this.keyboardAnimating = false;
         this.keyboardAnimationFrame = 0;
+        this.phoneAnimating = false;
+        this.phoneAnimationFrame = 0;
+        this.paperAnimating = false;
+        this.paperAnimationFrame = 0;
     }
 
     animateKeyboard() {
@@ -93,6 +117,94 @@ export class Game extends Scene {
                 // Animation complete - hide all layers
                 this.keyboardLayers.forEach(layer => layer.setAlpha(0));
                 this.keyboardAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animatePhone() {
+        if (this.phoneAnimating) return; // Prevent overlapping animations
+        
+        this.phoneAnimating = true;
+        this.phoneAnimationFrame = 0;
+        this.phoneFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.phoneLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.phoneAnimationFrame < this.phoneLayers.length) {
+                // Show current frame
+                this.phoneLayers[this.phoneAnimationFrame].setAlpha(1);
+                
+                // Hide previous frame (except for first frame)
+                if (this.phoneAnimationFrame > 0) {
+                    this.phoneLayers[this.phoneAnimationFrame - 1].setAlpha(0);
+                }
+                
+                this.phoneFrameDuration++;
+                
+                // If we've shown this frame for 2 cycles, move to next frame
+                if (this.phoneFrameDuration >= 2) {
+                    this.phoneAnimationFrame++;
+                    this.phoneFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a short delay
+                this.time.delayedCall(100, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.phoneLayers.forEach(layer => layer.setAlpha(0));
+                this.phoneAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animatePaper() {
+        if (this.paperAnimating) return; // Prevent overlapping animations
+        
+        this.paperAnimating = true;
+        this.paperAnimationFrame = 0;
+        
+        // Hide all layers first
+        this.paperLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Define the animation sequence: normal → paper1 → paper2 → paper1 → normal
+        const animationSequence = [
+            null,        // 0: normal background (no layer)
+            'paper1',    // 1: paper1
+            'paper2',    // 2: paper2
+            'paper1',    // 3: paper1 again
+            null         // 4: normal background (no layer)
+        ];
+        
+        // Animate through the sequence
+        const animateFrame = () => {
+            if (this.paperAnimationFrame < animationSequence.length) {
+                // Hide all layers first
+                this.paperLayers.forEach(layer => layer.setAlpha(0));
+                
+                // Show current frame if it's not null (normal background)
+                const currentFrame = animationSequence[this.paperAnimationFrame];
+                if (currentFrame) {
+                    const layerIndex = currentFrame === 'paper1' ? 0 : 1; // paper1 = index 0, paper2 = index 1
+                    this.paperLayers[layerIndex].setAlpha(1);
+                }
+                
+                this.paperAnimationFrame++;
+                
+                // Continue to next frame after a delay
+                this.time.delayedCall(150, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.paperLayers.forEach(layer => layer.setAlpha(0));
+                this.paperAnimating = false;
             }
         };
         
@@ -158,9 +270,13 @@ export class Game extends Scene {
                 ease: 'Power2'
             });
             
-            // Trigger keyboard animation if this is the keyboard element
+            // Trigger animations based on element type
             if (key === 'keyboard') {
                 this.animateKeyboard();
+            } else if (key === 'phone') {
+                this.animatePhone();
+            } else if (key === 'newspaper') {
+                this.animatePaper();
             }
         });
 
@@ -683,7 +799,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.avatarHitbox.destroy();
         }
         // Get a random scenario
-        this.currentClient = this.scenarioManager.getRandomScenario();
+        this.currentClient = this.scenarioManager.getScenarioByScenarioCount(this.gameState.scenarioCount);
 
         // Get client data for this scenario
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
@@ -1372,6 +1488,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Update UI
         this.updateUI();
+
+        this.gameState.scenarioCount++;
 
         // Check if day is complete
         if (this.gameState.isDayComplete()) {

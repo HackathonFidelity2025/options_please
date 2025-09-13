@@ -11,6 +11,7 @@ export class GameState {
         this.gameCompleted = false;
         this.scenarios = [];
         this.currentScenario = null;
+        this.scenarioCount = 0;
     }
 
     // Initialize game state
