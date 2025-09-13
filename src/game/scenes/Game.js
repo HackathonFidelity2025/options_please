@@ -15,6 +15,138 @@ export class Game extends Scene {
         this.guidebookModal = null;
         this.guidebookPages = [];
         this.currentGuidebookPage = 0;
+        
+        // Analytics tracking
+        this.currentScenarioAnalytics = null;
+        this.dailyAnalytics = [];
+    }
+
+    // Analytics system methods
+    initializeScenarioAnalytics() {
+        if (!this.currentClient) return;
+
+        // Count available clues
+        const availableClues = this.countAvailableClues(this.currentClient);
+        
+        this.currentScenarioAnalytics = {
+            scenarioId: this.currentClient.id,
+            scenarioName: this.currentClient.name,
+            clientId: this.currentClient.client,
+            startTime: Date.now(),
+            endTime: null,
+            availableClues: availableClues,
+            accessedClues: new Set(),
+            clientFilesAccessed: false,
+            decision: null,
+            optimalDecision: this.getOptimalDecision(this.currentClient),
+            outcome: null,
+            score: 0,
+            feedback: [],
+            grade: 'F'
+        };
+    }
+
+    countAvailableClues(scenario) {
+        let count = 0;
+        if (scenario.clues) {
+            if (scenario.clues.wordOfMouth && scenario.clues.wordOfMouth.length > 0) count++;
+            if (scenario.clues.newspaper && scenario.clues.newspaper.length > 0) count++;
+            if (scenario.clues.charts) count++;
+        }
+        return count;
+    }
+
+    getOptimalDecision(scenario) {
+        // Determine optimal decision based on outcomes
+        // The optimal decision is the one with the highest reputation change
+        if (!scenario.outcomes) return 'hold';
+        
+        let bestDecision = 'hold';
+        let bestReputationChange = scenario.outcomes.hold?.reputationChange || 0;
+        
+        ['call', 'put'].forEach(decision => {
+            const outcome = scenario.outcomes[decision];
+            if (outcome && outcome.reputationChange > bestReputationChange) {
+                bestReputationChange = outcome.reputationChange;
+                bestDecision = decision;
+            }
+        });
+        
+        return bestDecision;
+    }
+
+    trackClueAccessed(clueType) {
+        if (this.currentScenarioAnalytics) {
+            this.currentScenarioAnalytics.accessedClues.add(clueType);
+        }
+    }
+
+    trackClientFilesAccessed() {
+        if (this.currentScenarioAnalytics) {
+            this.currentScenarioAnalytics.clientFilesAccessed = true;
+        }
+    }
+
+    analyzeScenarioPerformance() {
+        if (!this.currentScenarioAnalytics) return null;
+
+        let score = 0;
+        let feedback = [];
+
+        // Check investigation thoroughness
+        const cluesAccessed = this.currentScenarioAnalytics.accessedClues.size;
+        const totalClues = this.currentScenarioAnalytics.availableClues;
+        const investigationRatio = totalClues > 0 ? cluesAccessed / totalClues : 0;
+
+        if (investigationRatio >= 0.8) {
+            score += 25;
+            feedback.push("✓ Thorough investigation of available evidence");
+        } else if (investigationRatio >= 0.5) {
+            score += Math.floor(investigationRatio * 25);
+            feedback.push("⚠ Could have investigated more evidence sources");
+        } else {
+            score += Math.floor(investigationRatio * 25);
+            feedback.push("⚠ Limited investigation - missed key evidence");
+        }
+
+        // Check optimal decision match
+        if (this.currentScenarioAnalytics.decision === this.currentScenarioAnalytics.optimalDecision) {
+            score += 50;
+            feedback.push("✓ Made the optimal recommendation");
+        } else {
+            feedback.push("✗ Recommendation doesn't match optimal choice");
+        }
+
+        // Check client profile consideration
+        if (this.currentScenarioAnalytics.clientFilesAccessed) {
+            score += 15;
+            feedback.push("✓ Reviewed client profile and risk tolerance");
+        } else {
+            feedback.push("⚠ Should have reviewed client information");
+        }
+
+        // Time bonus (simple implementation)
+        const timeSpent = (this.currentScenarioAnalytics.endTime - this.currentScenarioAnalytics.startTime) / 1000;
+        if (timeSpent < 120) { // Less than 2 minutes
+            score += 10;
+            feedback.push("✓ Efficient decision-making");
+        }
+
+        const finalScore = Math.min(100, Math.max(0, score));
+        
+        this.currentScenarioAnalytics.score = finalScore;
+        this.currentScenarioAnalytics.feedback = feedback;
+        this.currentScenarioAnalytics.grade = this.getGrade(finalScore);
+
+        return this.currentScenarioAnalytics;
+    }
+
+    getGrade(score) {
+        if (score >= 90) return 'A';
+        if (score >= 80) return 'B';
+        if (score >= 70) return 'C';
+        if (score >= 60) return 'D';
+        return 'F';
     }
 
     create() {
@@ -984,6 +1116,9 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Get a random scenario
         this.currentClient = this.scenarioManager.getScenarioByScenarioCount(this.gameState.scenarioCount);
 
+        // Initialize analytics tracking for this scenario
+        this.initializeScenarioAnalytics();
+
         // Get client data for this scenario
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
 
@@ -1011,7 +1146,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             ease: 'Back.easeOut',
             onComplete: () => {
                 // Play client voice
-                this.sound.play("old-man", { rate: 1 });
+                this.sound.play(clientData.voice, { rate: 1 });
                 // Create avatar label after positioning is complete
                 this.createAvatarLabel();
                 this.showClientOpeningStatement();
@@ -1247,6 +1382,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     showWordOfMouthClue() {
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'wordOfMouth');
         if (clue) {
+            this.trackClueAccessed('wordOfMouth');
             this.showPhoneBubble(clue);
         }
     }
@@ -1256,6 +1392,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const chartData = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
         
         if (chartData && chartData.type && chartData.title) {
+            this.trackClueAccessed('charts');
+            
             // Map the chart type to the correct image name
             let imageKey = chartData.type;
             
@@ -1276,6 +1414,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     showNewspaperClue() {
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'newspaper');
         if (clue) {
+            this.trackClueAccessed('newspaper');
             this.showNewspaperModal(clue);
             this.sound.play('paper-turn', { volume: 1 });
         }
@@ -1285,6 +1424,9 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         if (!this.currentClient) {
             return;
         }
+
+        // Track that client files were accessed
+        this.trackClientFilesAccessed();
 
         // Get client data from the clients array
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
@@ -1356,10 +1498,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Risk Factor Section
         const riskY = descY + 60;
         const riskFactor = clientData ? clientData.riskFactor : 'N/A';
-        console.log('Client risk factor:', riskFactor);
+        console.log('Client risk tolerance:', riskFactor);
         const riskColor = riskFactor >= 7 ? '#e74c3c' : riskFactor >= 4 ? '#f39c12' : '#27ae60'; // Red for high, orange for medium, green for low
         
-        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK FACTOR:', {
+        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK TOLERANCE:', {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#f39c12',
@@ -1959,6 +2101,19 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Get outcome
         const outcome = this.scenarioManager.getOutcome(this.currentClient, decision);
 
+        // Finalize analytics tracking
+        if (this.currentScenarioAnalytics) {
+            this.currentScenarioAnalytics.endTime = Date.now();
+            this.currentScenarioAnalytics.decision = decision;
+            this.currentScenarioAnalytics.outcome = outcome;
+            
+            // Analyze the performance
+            const analysis = this.analyzeScenarioPerformance();
+            if (analysis) {
+                this.dailyAnalytics.push(analysis);
+            }
+        }
+
         // Create trade result
         const tradeResult = {
             decision: decision,
@@ -2044,92 +2199,210 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.hideSpeechBubble();
         this.hidePhoneBubble();
 
-        // Show day summary
-        const daySummary = this.gameState.getDaySummary();
+        // Show enhanced day analytics
+        this.showDayAnalytics();
+    }
 
-        // Create day summary modal container
-        const summaryModal = this.add.container(0, 0);
-        summaryModal.setDepth(200);
+    showDayAnalytics() {
+        // Calculate overall day performance
+        const dayAnalytics = this.calculateDayAnalytics();
+
+        // Create analytics modal container
+        const analyticsModal = this.add.container(0, 0);
+        analyticsModal.setDepth(200);
 
         // Modal background - make interactive to block clicks
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
         modalBg.fillRect(0, 0, 1024, 768);
         modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
-        summaryModal.add(modalBg);
+        analyticsModal.add(modalBg);
 
-        // Modal content
-        const modalWidth = 500;
-        const modalHeight = 400;
+        // Modal content - larger for detailed breakdown
+        const modalWidth = 700;
+        const modalHeight = 750;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
 
         const modalContent = this.add.graphics();
-        modalContent.fillStyle(0x333333, 0.95);
-        modalContent.lineStyle(2, 0xffffff, 1);
-        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
-        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
-        summaryModal.add(modalContent);
+        modalContent.fillStyle(0x2c3e50, 0.95);
+        modalContent.lineStyle(3, 0xffffff, 1);
+        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        analyticsModal.add(modalContent);
 
         // Title
-        const titleText = this.add.text(512, modalY + 60, `Day ${daySummary.day} Summary`, {
-            fontSize: '24px',
+        const titleText = this.add.text(512, modalY + 40, `Day ${this.gameState.currentDay} Performance Analysis`, {
+            fontSize: '26px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
             stroke: '#000000',
             strokeThickness: 2
         }).setOrigin(0.5);
-        summaryModal.add(titleText);
+        analyticsModal.add(titleText);
 
-        // Summary content
-        const summaryText = this.add.text(512, modalY + 120,
-            `Reputation Change: ${daySummary.reputationChange > 0 ? '+' : ''}${daySummary.reputationChange}\n` +
-            `Final Reputation: ${daySummary.finalReputation}\n` +
-            `Trades Made: ${daySummary.trades.length}`, {
-            fontSize: '18px',
-            color: '#ffffff',
+        // Overall score and grade
+        const gradeColor = this.getGradeColor(dayAnalytics.overallGrade);
+        const scoreText = this.add.text(512, modalY + 85, 
+            `Overall Score: ${dayAnalytics.overallScore}/100 (Grade: ${dayAnalytics.overallGrade})`, {
+            fontSize: '22px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: gradeColor,
             stroke: '#000000',
-            strokeThickness: 1,
-            align: 'center'
+            strokeThickness: 2
         }).setOrigin(0.5);
-        summaryModal.add(summaryText);
+        analyticsModal.add(scoreText);
+
+        // Individual scenario breakdown
+        let yOffset = modalY + 130;
+        this.dailyAnalytics.forEach((analysis, index) => {
+            const scenarioTitle = this.add.text(modalX + 20, yOffset, 
+                `Scenario ${index + 1}: ${analysis.scenarioName}`, {
+                fontSize: '18px',
+                fontFamily: 'Minecraft, Courier New, monospace',
+                color: '#3498db',
+                stroke: '#000000',
+                strokeThickness: 1
+            });
+            analyticsModal.add(scenarioTitle);
+            yOffset += 25;
+
+            const scenarioScore = this.add.text(modalX + 40, yOffset, 
+                `Score: ${analysis.score}/100 (${analysis.grade}) | Clues: ${analysis.accessedClues.size}/${analysis.availableClues}`, {
+                fontSize: '16px',
+                fontFamily: 'Minecraft, Courier New, monospace',
+                color: this.getGradeColor(analysis.grade),
+                stroke: '#000000',
+                strokeThickness: 1
+            });
+            analyticsModal.add(scenarioScore);
+            yOffset += 20;
+
+            // Show key feedback
+            const keyFeedback = analysis.feedback.slice(0, 2); // Show first 2 feedback items
+            keyFeedback.forEach(feedback => {
+                const feedbackText = this.add.text(modalX + 40, yOffset, feedback, {
+                    fontSize: '14px',
+                    fontFamily: 'Minecraft, Courier New, monospace',
+                    color: '#ecf0f1',
+                    wordWrap: { width: modalWidth - 80 }
+                });
+                analyticsModal.add(feedbackText);
+                yOffset += 18;
+            });
+            yOffset += 10;
+        });
+
+        // Key insights section
+        const insightsY = modalY + modalHeight - 160;
+        const insightsTitle = this.add.text(modalX + 20, insightsY, 'Key Insights:', {
+            fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#f39c12',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        analyticsModal.add(insightsTitle);
+
+        const insights = this.generateDayInsights(dayAnalytics);
+        const insightsText = this.add.text(modalX + 20, insightsY + 25, insights, {
+            fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ffffff',
+            wordWrap: { width: modalWidth - 40 },
+            lineSpacing: 2
+        });
+        analyticsModal.add(insightsText);
 
         // Continue button
-        const continueButton = this.add.rectangle(512, modalY + 280, 120, 40, 0x00ff00);
+        const continueButton = this.add.rectangle(512, modalY + modalHeight - 40, 140, 45, 0x27ae60);
+        continueButton.setStrokeStyle(2, 0xffffff);
         continueButton.setInteractive();
+        continueButton.on('pointerover', () => {
+            this.sound.play('hover', { volume: 1 });
+            continueButton.setFillStyle(0x2ecc71);
+        });
         continueButton.on('pointerdown', () => {
-            summaryModal.destroy();
+            analyticsModal.destroy();
             this.startNextDay();
         });
-        summaryModal.add(continueButton);
+        analyticsModal.add(continueButton);
 
-        const continueButtonText = this.add.text(512, modalY + 280, 'Continue', {
-            fontSize: '18px',
-            color: '#000000',
-            stroke: '#ffffff',
+        const continueButtonText = this.add.text(512, modalY + modalHeight - 40, 'Continue', {
+            fontSize: '20px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ffffff',
+            stroke: '#000000',
             strokeThickness: 1
         }).setOrigin(0.5);
-        summaryModal.add(continueButtonText);
+        analyticsModal.add(continueButtonText);
 
         // Add hover effect to continue button
         continueButton.on('pointerover', () => {
-            this.tweens.add({
-                targets: [continueButton, continueButtonText],
-                x: '-=2',
-                y: '+=2',
-                duration: 100,
-                ease: 'Power2'
-            });
+            continueButton.setFillStyle(0x2ecc71);
         });
 
         continueButton.on('pointerout', () => {
-            this.tweens.add({
-                targets: [continueButton, continueButtonText],
-                x: '+=2',
-                y: '-=2',
-                duration: 100,
-                ease: 'Power2'
-            });
+            continueButton.setFillStyle(0x27ae60);
         });
+    }
+
+    calculateDayAnalytics() {
+        const totalScore = this.dailyAnalytics.reduce((sum, analysis) => sum + analysis.score, 0);
+        const averageScore = this.dailyAnalytics.length > 0 ? Math.round(totalScore / this.dailyAnalytics.length) : 0;
+        const overallGrade = this.getGrade(averageScore);
+
+        return {
+            overallScore: averageScore,
+            overallGrade: overallGrade,
+            totalScenarios: this.dailyAnalytics.length,
+            perfectScores: this.dailyAnalytics.filter(a => a.score >= 90).length,
+            investigationRate: this.dailyAnalytics.length > 0 ? 
+                this.dailyAnalytics.reduce((sum, a) => sum + (a.accessedClues.size / a.availableClues), 0) / this.dailyAnalytics.length : 0,
+            clientFilesRate: this.dailyAnalytics.length > 0 ?
+                this.dailyAnalytics.filter(a => a.clientFilesAccessed).length / this.dailyAnalytics.length : 0,
+            optimalDecisionRate: this.dailyAnalytics.length > 0 ?
+                this.dailyAnalytics.filter(a => a.decision === a.optimalDecision).length / this.dailyAnalytics.length : 0
+        };
+    }
+
+    generateDayInsights(dayAnalytics) {
+        let insights = [];
+
+        if (dayAnalytics.investigationRate < 0.5) {
+            insights.push("• Consider investigating all available evidence sources before making decisions");
+        } else if (dayAnalytics.investigationRate >= 0.8) {
+            insights.push("• Excellent investigation thoroughness!");
+        }
+
+        if (dayAnalytics.clientFilesRate < 0.5) {
+            insights.push("• Review client profiles more consistently to understand risk tolerance");
+        } else if (dayAnalytics.clientFilesRate >= 0.8) {
+            insights.push("• Great job considering client profiles in your decisions");
+        }
+
+        if (dayAnalytics.optimalDecisionRate < 0.5) {
+            insights.push("• Focus on analyzing all evidence to identify the best recommendations");
+        } else if (dayAnalytics.optimalDecisionRate >= 0.8) {
+            insights.push("• Excellent decision-making accuracy!");
+        }
+
+        if (dayAnalytics.perfectScores > 0) {
+            insights.push(`• Achieved ${dayAnalytics.perfectScores} perfect score${dayAnalytics.perfectScores > 1 ? 's' : ''}!`);
+        }
+
+        return insights.length > 0 ? insights.join('\n') : "• Keep practicing to improve your advisory skills!";
+    }
+
+    getGradeColor(grade) {
+        switch (grade) {
+            case 'A': return '#2ecc71'; // Green
+            case 'B': return '#3498db'; // Blue
+            case 'C': return '#f39c12'; // Orange
+            case 'D': return '#e67e22'; // Dark orange
+            case 'F': return '#e74c3c'; // Red
+            default: return '#ffffff'; // White
+        }
     }
 
     startNextDay() {
@@ -2141,6 +2414,10 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Start new day
         this.gameState.startNewDay();
+        
+        // Reset daily analytics for new day
+        this.dailyAnalytics = [];
+        
         this.updateUI();
         this.startNewDay();
     }

@@ -6,7 +6,7 @@
       "description": "A tech bro who is interested in investing in a tech startup",
       "riskFactor": 5,
       "avatar": "tech-bro.png",
-      "voice": "tech-bro.mp3"
+      "voice": "tech-bro"
     },
     {
       "id": "man",
@@ -14,7 +14,7 @@
       "description": "A man who is interested in investing in a tech startup",
       "riskFactor": 5,
       "avatar": "man.png",
-      "voice": "man.mp3"
+      "voice": "man"
     },
     {
       "id": "woman",
@@ -22,7 +22,7 @@
       "description": "A woman who is interested in investing in a tech startup",
       "riskFactor": 4,
       "avatar": "woman.png",
-      "voice": "woman.mp3"
+      "voice": "woman"
     },
     {
       "id": "young_woman",
@@ -30,7 +30,7 @@
       "description": "A young woman who is interested in investing in a tech startup",
       "riskFactor": 4,
       "avatar": "young-woman.png",
-      "voice": "young-woman.mp3"
+      "voice": "young-woman"
     },
     {
       "id": "young_man",
@@ -38,7 +38,7 @@
       "description": "A young man who is interested in investing in a tech startup",
       "riskFactor": 4,
       "avatar": "young-man.png",
-      "voice": "young-man.mp3"
+      "voice": "young-man"
     },
     {
       "id": "old_man",
@@ -46,7 +46,7 @@
       "description": "An old man who is interested in investing in a tech startup",
       "riskFactor": 5,
       "avatar": "old-man.png",
-      "voice": "old-man.mp3"
+      "voice": "old-man"
     },
     {
       "id": "sad_businessman",
@@ -54,7 +54,7 @@
       "description": "A sad businessman who is interested in investing in a tech startup",
       "riskFactor": 5,
       "avatar": "sad-businessman.png",
-      "voice": "sad-businessman.mp3"
+      "voice": "sad-businessman"
     },
     {
       "id": "shopkeeper",
@@ -62,7 +62,7 @@
       "description": "A shopkeeper who is interested in investing in a tech startup",
       "riskFactor": 5,
       "avatar": "shopkeeper.png",
-      "voice": "shopkeeper.mp3"
+      "voice": "shopkeeper"
     }
   ],
   "scenarios": [
