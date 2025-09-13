@@ -14,6 +14,9 @@ export class Game extends Scene
         this.clueElements = {};
         this.decisionModal = null;
         this.dayStartModal = null;
+        this.guidebookModal = null;
+        this.guidebookPages = [];
+        this.currentGuidebookPage = 0;
     }
 
     create ()
@@ -199,6 +202,308 @@ export class Game extends Scene
             strokeThickness: 2
         });
         this.uiOverlay.add(this.clientText);
+        
+        // Create guidebook button in bottom right
+        this.createGuidebookButton();
+        
+        // Initialize guidebook pages
+        this.initializeGuidebookPages();
+    }
+
+    createGuidebookButton() {
+        // Position in bottom right corner
+        const buttonX = 950;
+        const buttonY = 700;
+        const buttonWidth = 60;
+        const buttonHeight = 60;
+        
+        // Create guidebook button background
+        this.guidebookButton = this.add.rectangle(buttonX, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        this.guidebookButton.setInteractive();
+        this.guidebookButton.setDepth(120);
+        this.guidebookButton.on('pointerdown', () => this.showGuidebookModal());
+        
+        // Add border
+        this.guidebookButtonBorder = this.add.graphics();
+        this.guidebookButtonBorder.lineStyle(2, 0xffffff, 1);
+        this.guidebookButtonBorder.strokeRoundedRect(buttonX - buttonWidth/2, buttonY - buttonHeight/2, buttonWidth, buttonHeight, 8);
+        this.guidebookButtonBorder.setDepth(121);
+        
+        // Add "?" text
+        this.guidebookText = this.add.text(buttonX, buttonY, '?', {
+            fontSize: '32px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+        this.guidebookText.setDepth(122);
+        
+        // Add hover effects
+        this.guidebookButton.on('pointerover', () => {
+            this.guidebookButton.setFillStyle(0x666666);
+            this.tweens.add({
+                targets: this.guidebookButton,
+                scaleX: 1.1,
+                scaleY: 1.1,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+        
+        this.guidebookButton.on('pointerout', () => {
+            this.guidebookButton.setFillStyle(0x4a4a4a);
+            this.tweens.add({
+                targets: this.guidebookButton,
+                scaleX: 1,
+                scaleY: 1,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+    }
+
+    initializeGuidebookPages() {
+        // Define guidebook pages - you can easily add more pages here
+        this.guidebookPages = [
+            {
+                title: "Your Role as a Financial Advisor",
+                content: `As a financial advisor, your primary responsibility is to guide clients through the decision-making process regarding their options trading opportunities. Clients will visit your office with questions about a specific company’s stock. Based on the information and evidence they provide, it is your duty to recommend one of three courses of action: Call, Put, or Hold.
+
+Your ability to analyze market signals, weigh risks, and provide sound recommendations will directly impact both client satisfaction and your professional reputation.`
+            },
+            {
+                title: "Decision Options",
+                content: `
+• Call when you believe the company’s stock value is likely to rise in the future. This indicates a bullish outlook and positions your client to benefit from upward momentum.
+
+• Put
+Select Put when you believe the company’s stock value is likely to decrease. This represents a bearish outlook and helps your client profit from downward movement.
+
+• Hold
+Select Hold when the available information is inconclusive or the risks are too high to justify a recommendation. Use this option carefully, as clients may view indecision negatively and it may impact their trust in your judgment.`
+            },
+            {
+                title: "Evaluating Evidence",
+                content: `Every client will bring supporting materials for you to review. These may include:           
+• News Articles or Headlines – Reports of company announcements, product launches, or external factors such as regulatory changes.
+• Financial Charts – Data indicating projected revenue, industry performance, or analyst expectations.
+• Market Graphs – Historical and current stock trends that reveal potential trajectories.
+
+It is your responsibility to critically assess the reliability and relevance of this evidence. Some sources will be clear and credible, while others may present conflicting or incomplete information.
+`
+            },
+            {
+                title: "Word of Mouth & Internal Insights",
+                content: `In addition to the evidence provided by clients, you will occasionally receive voicemails and internal messages from coworkers. These insights may provide valuable context, such as early rumors, industry chatter, or reminders of upcoming market events.
+
+While these tips can help inform your decisions, be mindful of their reliability. Not all word of mouth is accurate, and poor judgment can have consequences for both you and your clients.`
+            },
+            {
+                title: "Evaluating Evidence",
+                content: `Your professional reputation is a direct reflection of the quality of the guidance you provide. Every recommendation you make—whether it results in a profit, a loss, or missed opportunity—impacts how clients, colleagues, and regulators perceive your advisory practice.           
+• Positive Reputation
+Consistently accurate and thoughtful advice builds trust with clients. A strong reputation attracts more business, unlocks higher-value clients, and establishes you as a reliable financial advisor.
+• Neutral Reputation
+Safe or indecisive recommendations may keep you out of trouble in the short term, but over time, clients may lose confidence in your ability to provide meaningful insights.
+• Negative Reputation
+Poor or reckless recommendations will damage client trust, reduce future business opportunities, and may draw increased scrutiny from regulators. In extreme cases, a severely damaged reputation could jeopardize your career entirely.
+
+Key Insight: Reputation is not built overnight. Each client interaction contributes to your long-term standing. Protect it carefully, as it is the most valuable asset in your advisory career.
+`
+            }
+        ];
+    }
+
+    showGuidebookModal() {
+        // Reset to first page when opening
+        this.currentGuidebookPage = 0;
+        this.createGuidebookModal();
+    }
+
+    createGuidebookModal() {
+        // Create guidebook modal container
+        this.guidebookModal = this.add.container(0, 0);
+        this.guidebookModal.setDepth(250);
+        
+        // Modal background
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.8);
+        modalBg.fillRect(0, 0, 1024, 768);
+        this.guidebookModal.add(modalBg);
+        
+        // Modal content
+        const modalWidth = 700;
+        const modalHeight = 500;
+        const modalX = (1024 - modalWidth) / 2;
+        const modalY = (768 - modalHeight) / 2;
+        
+        const modalContent = this.add.graphics();
+        modalContent.fillStyle(0x333333, 0.95);
+        modalContent.lineStyle(3, 0xffffff, 1);
+        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        this.guidebookModal.add(modalContent);
+        
+        // Title
+        const currentPage = this.guidebookPages[this.currentGuidebookPage];
+        const titleText = this.add.text(512, modalY + 40, currentPage.title, {
+            fontSize: '28px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+        this.guidebookModal.add(titleText);
+        
+        // Content
+        const contentText = this.add.text(512, modalY + 120, currentPage.content, {
+            fontSize: '16px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1,
+            wordWrap: { width: modalWidth - 40 },
+            align: 'left'
+        }).setOrigin(0.5);
+        this.guidebookModal.add(contentText);
+        
+        // Navigation buttons (only show if more than 1 page)
+        if (this.guidebookPages.length > 1) {
+            this.createGuidebookNavigation(modalX, modalY, modalWidth, modalHeight);
+        }
+        
+        // Close button
+        const closeButton = this.add.rectangle(512, modalY + 420, 120, 40, 0xff0000);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => this.hideGuidebookModal());
+        this.guidebookModal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, modalY + 420, 'Close', {
+            fontSize: '18px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        this.guidebookModal.add(closeButtonText);
+        
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xff3333);
+        });
+        
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0xff0000);
+        });
+    }
+
+    createGuidebookNavigation(modalX, modalY, modalWidth, modalHeight) {
+        const buttonY = modalY + 360;
+        const buttonWidth = 80;
+        const buttonHeight = 35;
+        
+        // Previous button
+        const prevButton = this.add.rectangle(modalX + 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        prevButton.setInteractive();
+        prevButton.on('pointerdown', () => this.previousGuidebookPage());
+        this.guidebookModal.add(prevButton);
+        
+        const prevButtonText = this.add.text(modalX + 100, buttonY, 'Previous', {
+            fontSize: '14px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        this.guidebookModal.add(prevButtonText);
+        
+        // Page indicator
+        const pageIndicator = this.add.text(512, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
+            fontSize: '16px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        this.guidebookModal.add(pageIndicator);
+        
+        // Next button
+        const nextButton = this.add.rectangle(modalX + modalWidth - 100, buttonY, buttonWidth, buttonHeight, 0x4a4a4a);
+        nextButton.setInteractive();
+        nextButton.on('pointerdown', () => this.nextGuidebookPage());
+        this.guidebookModal.add(nextButton);
+        
+        const nextButtonText = this.add.text(modalX + modalWidth - 100, buttonY, 'Next', {
+            fontSize: '14px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        this.guidebookModal.add(nextButtonText);
+        
+        // Update button states
+        this.updateGuidebookNavigation(prevButton, nextButton, pageIndicator);
+        
+        // Add hover effects
+        prevButton.on('pointerover', () => {
+            if (this.currentGuidebookPage > 0) {
+                prevButton.setFillStyle(0x666666);
+            }
+        });
+        
+        prevButton.on('pointerout', () => {
+            prevButton.setFillStyle(0x4a4a4a);
+        });
+        
+        nextButton.on('pointerover', () => {
+            if (this.currentGuidebookPage < this.guidebookPages.length - 1) {
+                nextButton.setFillStyle(0x666666);
+            }
+        });
+        
+        nextButton.on('pointerout', () => {
+            nextButton.setFillStyle(0x4a4a4a);
+        });
+    }
+
+    updateGuidebookNavigation(prevButton, nextButton, pageIndicator) {
+        // Update page indicator
+        pageIndicator.setText(`${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`);
+        
+        // Update button states
+        if (this.currentGuidebookPage === 0) {
+            prevButton.setAlpha(0.5);
+            prevButton.removeInteractive();
+        } else {
+            prevButton.setAlpha(1);
+            prevButton.setInteractive();
+        }
+        
+        if (this.currentGuidebookPage === this.guidebookPages.length - 1) {
+            nextButton.setAlpha(0.5);
+            nextButton.removeInteractive();
+        } else {
+            nextButton.setAlpha(1);
+            nextButton.setInteractive();
+        }
+    }
+
+    nextGuidebookPage() {
+        if (this.currentGuidebookPage < this.guidebookPages.length - 1) {
+            this.currentGuidebookPage++;
+            this.hideGuidebookModal();
+            this.createGuidebookModal();
+        }
+    }
+
+    previousGuidebookPage() {
+        if (this.currentGuidebookPage > 0) {
+            this.currentGuidebookPage--;
+            this.hideGuidebookModal();
+            this.createGuidebookModal();
+        }
+    }
+
+    hideGuidebookModal() {
+        if (this.guidebookModal) {
+            this.guidebookModal.destroy();
+            this.guidebookModal = null;
+        }
     }
 
     startNewDay() {
