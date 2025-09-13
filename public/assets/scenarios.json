@@ -69,26 +69,10 @@
         "newspaper": [
           "GPU Makers Inc. earnings report 3x higher than expected."
         ],
-        "charts": [
-          {
-            "type": "revenue",
-            "data": [
-              100,
-              120,
-              150,
-              180,
-              220
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
-            "title": "Graphics Makers Inc. Revenue Growth"
-          }
-        ]
+        "charts": {
+          "type": "graph-down",
+          "title": "Graphics Makers Quarterly Revenue"
+        }
       },
       "outcomes": {
         "call": {

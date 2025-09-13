@@ -80,6 +80,12 @@ export class Preloader extends Scene
         this.load.image('computer3', 'backgrounds/computer/computer3.png');
         this.load.image('computer4', 'backgrounds/computer/computer4.png');
 
+        // Load computer UI backgrounds
+        this.load.image('graph-down', 'computer-ui/graph-down.png');
+        this.load.image('graph-up', 'computer-ui/graph-up.png');
+        this.load.image('graph-red-pie', 'computer-ui/graph-red-pie.png');
+        this.load.image('graph-green-pie', 'computer-ui/graph-green-pie.png');
+
         // Load binders background layers for animation
         this.load.image('binders1', 'backgrounds/binders/binders1.png');
 

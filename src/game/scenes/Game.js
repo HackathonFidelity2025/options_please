@@ -1101,10 +1101,24 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     showComputerClue() {
-
-        const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
-        if (clue) {
-            this.showClueModal(clue.title, this.formatChartData(clue));
+        // Get chart data from current scenario
+        const chartData = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
+        
+        if (chartData && chartData.type && chartData.title) {
+            // Map the chart type to the correct image name
+            let imageKey = chartData.type;
+            
+            // Handle pie chart naming differences
+            if (chartData.type === 'pie-green') {
+                imageKey = 'graph-green-pie';
+            } else if (chartData.type === 'pie-red') {
+                imageKey = 'graph-red-pie';
+            }
+            
+            this.showComputerModal(imageKey, chartData.title);
+        } else {
+            // Fallback if no chart data is available
+            this.showComputerModal('graph-down', 'MARKET ANALYSIS REPORT');
         }
     }
 
@@ -1299,6 +1313,64 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Play paper sound effect
         this.sound.play('paper-turn', { volume: 0.5 });
+    }
+
+    showComputerModal(computerImageKey, headerText) {
+        // Create computer modal container
+        const modal = this.add.container(0, 0);
+        modal.setDepth(150);
+        
+        // Modal background - make interactive to block clicks
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.8);
+        modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        modal.add(modalBg);
+        
+        // Display the computer UI sprite centered
+        const computerSprite = this.add.image(512, 384, computerImageKey);
+        computerSprite.setScale(0.6); // Scale to fit nicely in modal
+        modal.add(computerSprite);
+        
+        // Create header text overlay
+        const header = this.add.text(500, 218, headerText, {
+            fontFamily: '"Minecraft", "Courier New", monospace',
+            fontSize: '38px',
+            color: '#000000', // Black text for computer screen
+            fontStyle: 'bold',
+            align: 'center',
+            wordWrap: { width: 380 },
+            resolution: 1, // Lower resolution for more pixelated effect
+        }).setOrigin(0.5, 0.25);
+        modal.add(header);
+        
+        // Close button positioned below the computer screen
+        const closeButton = this.add.rectangle(512, 600, 120, 40, 0x8B4513);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            modal.destroy();
+        });
+        modal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, 600, 'Close', {
+            fontSize: '18px',
+            color: '#ffffff',
+            fontFamily: '"Minecraft", "Courier New", monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1, // Lower resolution for pixelated effect
+        }).setOrigin(0.5);
+        modal.add(closeButtonText);
+        
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D);
+        });
+        
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513);
+        });
     }
 
     showNewspaperModal(clue) {
