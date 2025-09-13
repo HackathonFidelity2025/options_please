@@ -4,6 +4,7 @@ import { Scene } from 'phaser';
 export class MainMenu extends Scene
 {
     logoTween;
+    keyboardTimer;
 
     constructor ()
     {
@@ -13,6 +14,18 @@ export class MainMenu extends Scene
     create ()
     {
         this.add.image(512, 384, 'background').setDisplaySize(1024, 768);
+
+        // Play intro theme
+        this.sound.play('intro', { loop: true });
+
+        // Play keyboard soft sound every 10 seconds
+        this.keyboardTimer = this.time.addEvent({
+            delay: 10000, // 5 seconds in milliseconds
+            callback: () => {
+                this.sound.play('keyboard-soft', { volume: 0.25, seek: 5 });
+            },
+            loop: true // Repeat indefinitely
+        });
 
         this.logo = this.add.image(512, 300, 'logo').setDepth(100);
 
@@ -44,6 +57,16 @@ export class MainMenu extends Scene
             this.logoTween.stop();
             this.logoTween = null;
         }
+
+        // Stop the keyboard timer
+        if (this.keyboardTimer)
+        {
+            this.keyboardTimer.destroy();
+            this.keyboardTimer = null;
+        }
+
+        // Stop all sounds
+        this.sound.stopAll();
 
         this.scene.start('Game');
     }

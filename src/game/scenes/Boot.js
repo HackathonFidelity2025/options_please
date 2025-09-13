@@ -15,6 +15,7 @@ export class Boot extends Scene
         this.load.image('background', 'assets/background.png');
         this.load.image('background2', 'assets/op-bg-2.png');
         this.load.image('background3', 'assets/op-bg-3.png');
+        
     }
 
     create ()

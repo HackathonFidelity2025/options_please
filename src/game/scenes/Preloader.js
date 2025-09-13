@@ -34,6 +34,9 @@ export class Preloader extends Scene
 
         this.load.image('logo', 'logo.png');
         this.load.image('star', 'star.png');
+
+        // Load all songs
+        this.load.audio('intro', 'sounds/intro-theme.mp3');
         
         // Load all client avatars
         this.load.image('tech-bro', 'tech-bro.png');
@@ -60,6 +63,7 @@ export class Preloader extends Scene
 
         // Load all sound effects
         this.load.audio('hover', 'sounds/bloop.mp3');
+        this.load.audio('keyboard-soft', 'sounds/keyboard-typing-soft.mp3');
     }
 
     create ()
