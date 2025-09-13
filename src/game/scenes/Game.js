@@ -27,6 +27,9 @@ export class Game extends Scene {
         // Set up the main game background
         this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
 
+        // Create background animation layers
+        this.createBackgroundLayers();
+
         // Create the desk and UI elements
         this.createDeskElements();
 
@@ -57,17 +60,188 @@ export class Game extends Scene {
         EventBus.emit('current-scene-ready', this);
     }
 
+    createBackgroundLayers() {
+        // Create keyboard animation layers - all positioned at the same location
+        this.keyboardLayers = [];
+        for (let i = 1; i <= 4; i++) {
+            const layer = this.add.image(512, 384, `keyboard${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.keyboardLayers.push(layer);
+        }
+        
+        // Create phone animation layers - all positioned at the same location
+        this.phoneLayers = [];
+        for (let i = 1; i <= 4; i++) {
+            const layer = this.add.image(512, 384, `phone${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.phoneLayers.push(layer);
+        }
+        
+        // Create paper animation layers - all positioned at the same location
+        this.paperLayers = [];
+        for (let i = 1; i <= 2; i++) {
+            const layer = this.add.image(512, 384, `paper${i}`);
+            layer.setDisplaySize(1024, 768);
+            layer.setDepth(5); // Above background but below desk elements
+            layer.setAlpha(0); // Start hidden
+            this.paperLayers.push(layer);
+        }
+        
+        // Store animation state
+        this.keyboardAnimating = false;
+        this.keyboardAnimationFrame = 0;
+        this.phoneAnimating = false;
+        this.phoneAnimationFrame = 0;
+        this.paperAnimating = false;
+        this.paperAnimationFrame = 0;
+    }
+
+    animateKeyboard() {
+        if (this.keyboardAnimating) return; // Prevent overlapping animations
+        
+        this.keyboardAnimating = true;
+        this.keyboardAnimationFrame = 0;
+        this.keyboardFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.keyboardLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.keyboardAnimationFrame < this.keyboardLayers.length) {
+                // Show current frame
+                this.keyboardLayers[this.keyboardAnimationFrame].setAlpha(1);
+                
+                // Hide previous frame (except for first frame)
+                if (this.keyboardAnimationFrame > 0) {
+                    this.keyboardLayers[this.keyboardAnimationFrame - 1].setAlpha(0);
+                }
+                
+                this.keyboardFrameDuration++;
+                
+                // If we've shown this frame for 2 cycles, move to next frame
+                if (this.keyboardFrameDuration >= 2) {
+                    this.keyboardAnimationFrame++;
+                    this.keyboardFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a short delay
+                this.time.delayedCall(100, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.keyboardLayers.forEach(layer => layer.setAlpha(0));
+                this.keyboardAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animatePhone() {
+        if (this.phoneAnimating) return; // Prevent overlapping animations
+        
+        this.phoneAnimating = true;
+        this.phoneAnimationFrame = 0;
+        this.phoneFrameDuration = 0; // Track how long current frame has been shown
+        
+        // Hide all layers first
+        this.phoneLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Animate through each frame
+        const animateFrame = () => {
+            if (this.phoneAnimationFrame < this.phoneLayers.length) {
+                // Show current frame
+                this.phoneLayers[this.phoneAnimationFrame].setAlpha(1);
+                
+                // Hide previous frame (except for first frame)
+                if (this.phoneAnimationFrame > 0) {
+                    this.phoneLayers[this.phoneAnimationFrame - 1].setAlpha(0);
+                }
+                
+                this.phoneFrameDuration++;
+                
+                // If we've shown this frame for 2 cycles, move to next frame
+                if (this.phoneFrameDuration >= 2) {
+                    this.phoneAnimationFrame++;
+                    this.phoneFrameDuration = 0;
+                }
+                
+                // Continue to next frame after a short delay
+                this.time.delayedCall(100, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.phoneLayers.forEach(layer => layer.setAlpha(0));
+                this.phoneAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
+    animatePaper() {
+        if (this.paperAnimating) return; // Prevent overlapping animations
+        
+        this.paperAnimating = true;
+        this.paperAnimationFrame = 0;
+        
+        // Hide all layers first
+        this.paperLayers.forEach(layer => layer.setAlpha(0));
+        
+        // Define the animation sequence: normal → paper1 → paper2 → paper1 → normal
+        const animationSequence = [
+            null,        // 0: normal background (no layer)
+            'paper1',    // 1: paper1
+            'paper2',    // 2: paper2
+            'paper1',    // 3: paper1 again
+            null         // 4: normal background (no layer)
+        ];
+        
+        // Animate through the sequence
+        const animateFrame = () => {
+            if (this.paperAnimationFrame < animationSequence.length) {
+                // Hide all layers first
+                this.paperLayers.forEach(layer => layer.setAlpha(0));
+                
+                // Show current frame if it's not null (normal background)
+                const currentFrame = animationSequence[this.paperAnimationFrame];
+                if (currentFrame) {
+                    const layerIndex = currentFrame === 'paper1' ? 0 : 1; // paper1 = index 0, paper2 = index 1
+                    this.paperLayers[layerIndex].setAlpha(1);
+                }
+                
+                this.paperAnimationFrame++;
+                
+                // Continue to next frame after a delay
+                this.time.delayedCall(150, animateFrame);
+            } else {
+                // Animation complete - hide all layers
+                this.paperLayers.forEach(layer => layer.setAlpha(0));
+                this.paperAnimating = false;
+            }
+        };
+        
+        // Start the animation
+        animateFrame();
+    }
+
     createDeskElements() {
         // Create interactive desk elements with paired labels
         this.createInteractiveElement('phone', 805, 545, 140, 110, 0x8B4513, 'Phone', () => this.showWordOfMouthClue());
         this.createInteractiveElement('computer', 585, 425, 220, 200, 0x000000, 'Computer', () => this.showComputerClue());
         this.createInteractiveElement('newspaper', 150, 590, 150, 160, 0xFFFFFF, 'News', () => this.showNewspaperClue());
         this.createInteractiveElement('keyboard', 520, 610, 340, 100, 0x333333, 'Recommend', () => this.showDecisionModal());
+        this.createInteractiveElement('binders', 650, 210, 125, 110, 0x000000, 'Client Files', () => this.showClientFiles());
     }
 
     createInteractiveElement(key, x, y, width, height, color, labelText, onClick) {
-        // Create the interactive rectangle
-        this.clueElements[key] = this.add.rectangle(x, y, width, height, color);
+        // Create the interactive rectangle (transparent background)
+        this.clueElements[key] = this.add.rectangle(x, y, width, height, color, 0);
         this.clueElements[key].setInteractive();
         this.clueElements[key].on('pointerdown', onClick);
         this.clueElements[key].setDepth(10);
@@ -78,9 +252,10 @@ export class Game extends Scene {
 
         // Create the label text first to get its actual dimensions
         const label = this.add.text(labelX, labelY, labelText, {
-            fontSize: '20px', // Increased font size
+            fontSize: '20px', // Same font size as handbook
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
-            fontFamily: 'Minecraft, Courier New, monospace' // Monospace font for retro feel
+            fontFamily: 'Courier New, monospace' // Same font as handbook
         }).setDepth(15);
         label.setOrigin(0.5, 0.5); // Center the text origin
         label.setAlpha(0); // Start hidden
@@ -112,6 +287,15 @@ export class Game extends Scene {
                 duration: 200,
                 ease: 'Power2'
             });
+            
+            // Trigger animations based on element type
+            if (key === 'keyboard') {
+                this.animateKeyboard();
+            } else if (key === 'phone') {
+                this.animatePhone();
+            } else if (key === 'newspaper') {
+                this.animatePaper();
+            }
         });
 
         this.clueElements[key].on('pointerout', () => {
@@ -140,8 +324,9 @@ export class Game extends Scene {
         // Create the label text first to get its actual dimensions
         const label = this.add.text(labelX, labelY, labelText, {
             fontSize: '20px',
+            fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
-            fontFamily: 'Minecraft, Courier New, monospace'
+            fontFamily: 'Courier New, monospace' // Same font as handbook
         }).setDepth(200);
         label.setAlpha(0); // Start hidden
 
@@ -201,18 +386,8 @@ export class Game extends Scene {
         });
         this.uiOverlay.add(this.dayText);
 
-        // Reputation score
-        this.reputationText = this.add.text(50, 80, `Reputation: ${this.gameState.reputationScore}`, {
-            fontSize: '20px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2
-        });
-        this.uiOverlay.add(this.reputationText);
-
         // Client counter
-        this.clientText = this.add.text(50, 110, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
+        this.clientText = this.add.text(50, 80, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#ffffff',
@@ -355,13 +530,6 @@ While these tips can help inform your decisions, be mindful of their reliability
             {
                 title: "Your Professional Reputation",
                 content: `Your professional reputation is a direct reflection of the quality of the guidance you provide. Every recommendation you make—whether it results in a profit, a loss, or missed opportunity—impacts how clients, colleagues, and regulators perceive your advisory practice.           
-
-• Positive Reputation
-
-• Neutral Reputation
-
-• Negative Reputation
-
 
 Key Insight: Reputation is not built overnight. Each client interaction contributes to your long-term standing. Protect it carefully, as it is the most valuable asset in your advisory career.
 `
@@ -652,8 +820,12 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     spawnClient() {
+        if (this.clientAvatar) {
+            this.clientAvatar.destroy();
+            this.avatarHitbox.destroy();
+        }
         // Get a random scenario
-        this.currentClient = this.scenarioManager.getRandomScenario();
+        this.currentClient = this.scenarioManager.getScenarioByScenarioCount(this.gameState.scenarioCount);
 
         // Get client data for this scenario
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
@@ -667,8 +839,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.clientAvatar.setScale(0.3);
         this.clientAvatar.setDepth(50);
 
-        // Create a larger hitbox for better interaction (temporarily visible for debugging)
-        this.avatarHitbox = this.add.rectangle(-200, 335, 130, 295, 0xff0000, 0.3);
+        // Create a larger hitbox for better interaction
+        this.avatarHitbox = this.add.rectangle(-200, 335, 130, 295, 0xff0000, 0);
         this.avatarHitbox.setInteractive();
         this.avatarHitbox.setDepth(51); // Above the avatar
 
@@ -799,9 +971,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     showComputerClue() {
-        // Randomly show either chart or graph
-        const clueType = Math.random() < 0.5 ? 'charts' : 'graphs';
-        const clue = this.scenarioManager.getClueByCategory(this.currentClient, clueType);
+
+        const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'charts');
         if (clue) {
             this.showClueModal(clue.title, this.formatChartData(clue));
         }
@@ -813,6 +984,191 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.showNewspaperModal(clue);
             this.sound.play('paper-turn', { volume: 1 });
         }
+    }
+
+    showClientFiles() {
+        if (!this.currentClient) {
+            return;
+        }
+
+        // Get client data
+        const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
+        
+        // Create client files modal container
+        const modal = this.add.container(0, 0);
+        modal.setDepth(150);
+        
+        // Modal background - make interactive to block clicks
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.8);
+        modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        modal.add(modalBg);
+        
+        // Modal content
+        const modalWidth = 700;
+        const modalHeight = 600;
+        const modalX = (1024 - modalWidth) / 2;
+        const modalY = (768 - modalHeight) / 2;
+
+        const modalContent = this.add.graphics();
+        modalContent.fillStyle(0x2c3e50, 0.95);
+        modalContent.lineStyle(3, 0xffffff, 1);
+        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 15);
+        modal.add(modalContent);
+
+        // Title
+        const titleText = this.add.text(512, modalY + 30, 'CLIENT FILES', {
+            fontSize: '28px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+        modal.add(titleText);
+
+        // Client Information Section
+        const clientInfoY = modalY + 80;
+        const clientName = clientData ? clientData.name : 'Unknown Client';
+        const clientDesc = clientData ? clientData.description : 'No description available';
+        
+        const clientNameText = this.add.text(modalX + 20, clientInfoY, `CLIENT: ${clientName.toUpperCase()}`, {
+            fontSize: '20px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#3498db',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        modal.add(clientNameText);
+
+        const clientDescText = this.add.text(modalX + 20, clientInfoY + 30, clientDesc, {
+            fontSize: '14px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ecf0f1',
+            stroke: '#000000',
+            strokeThickness: 1,
+            wordWrap: { width: modalWidth - 40 }
+        });
+        modal.add(clientDescText);
+
+        // Scenario Information Section
+        const scenarioY = clientInfoY + 80;
+        const scenarioNameText = this.add.text(modalX + 20, scenarioY, `CASE: ${this.currentClient.name.toUpperCase()}`, {
+            fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#e74c3c',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        modal.add(scenarioNameText);
+
+        const scenarioDescText = this.add.text(modalX + 20, scenarioY + 25, this.currentClient.description, {
+            fontSize: '14px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ecf0f1',
+            stroke: '#000000',
+            strokeThickness: 1,
+            wordWrap: { width: modalWidth - 40 }
+        });
+        modal.add(scenarioDescText);
+
+        // Opening Statement Section
+        const openingY = scenarioY + 70;
+        const openingTitleText = this.add.text(modalX + 20, openingY, 'CLIENT STATEMENT:', {
+            fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#f39c12',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        modal.add(openingTitleText);
+
+        const openingText = this.add.text(modalX + 20, openingY + 25, `"${this.currentClient.openingStatement}"`, {
+            fontSize: '14px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ecf0f1',
+            stroke: '#000000',
+            strokeThickness: 1,
+            wordWrap: { width: modalWidth - 40 },
+            fontStyle: 'italic'
+        });
+        modal.add(openingText);
+
+        // Available Evidence Section
+        const evidenceY = openingY + 80;
+        const evidenceTitleText = this.add.text(modalX + 20, evidenceY, 'AVAILABLE EVIDENCE:', {
+            fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#27ae60',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        modal.add(evidenceTitleText);
+
+        let evidenceYOffset = 25;
+        const evidenceTypes = [
+            { key: 'wordOfMouth', label: '• Phone Messages', color: '#3498db' },
+            { key: 'newspaper', label: '• News Articles', color: '#e74c3c' },
+            { key: 'charts', label: '• Financial Charts', color: '#f39c12' },
+            { key: 'graphs', label: '• Market Graphs', color: '#9b59b6' }
+        ];
+
+        evidenceTypes.forEach(evidenceType => {
+            const hasEvidence = this.currentClient.clues && this.currentClient.clues[evidenceType.key];
+            const evidenceText = this.add.text(modalX + 20, evidenceY + evidenceYOffset, 
+                hasEvidence ? evidenceType.label : `${evidenceType.label} (No data)`, {
+                fontSize: '14px',
+                fontFamily: 'Minecraft, Courier New, monospace',
+                color: hasEvidence ? evidenceType.color : '#7f8c8d',
+                stroke: '#000000',
+                strokeThickness: 1
+            });
+            modal.add(evidenceText);
+            evidenceYOffset += 20;
+        });
+
+        // Game State Information
+        const gameStateY = evidenceY + evidenceYOffset + 20;
+        const gameStateText = this.add.text(modalX + 20, gameStateY, 
+            `DAY: ${this.gameState.currentDay} | CLIENT: ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients} | REPUTATION: ${this.gameState.reputationScore}`, {
+            fontSize: '12px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#95a5a6',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        modal.add(gameStateText);
+
+        // Close button
+        const closeButton = this.add.rectangle(512, modalY + modalHeight - 40, 120, 40, 0x8B4513);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            modal.destroy();
+        });
+        modal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, modalY + modalHeight - 40, 'Close Files', {
+            fontSize: '16px',
+            color: '#ffffff',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        modal.add(closeButtonText);
+        
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D);
+        });
+        
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513);
+        });
+
+        // Play paper sound effect
+        this.sound.play('paper-turn', { volume: 0.5 });
     }
 
     showNewspaperModal(clue) {
@@ -1158,6 +1514,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Update UI
         this.updateUI();
 
+        this.gameState.scenarioCount++;
+
         // Check if day is complete
         if (this.gameState.isDayComplete()) {
             this.time.delayedCall(3000, () => {
@@ -1176,16 +1534,9 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.showSpeechBubble(outcome.message);
     }
 
-    nextClient() {
-        // Remove interaction from current client
-        if (this.avatarHitbox) {
-            this.avatarHitbox.removeInteractive();
-        }
-
-        // Hide any speech bubbles
-        this.hideSpeechBubble();
-
+    removeAvatar(shouldSpawnNew = true) {
         // Slide current client out
+        console.log('Removing avatar');
         this.tweens.add({
             targets: [this.clientAvatar, this.avatarHitbox],
             x: -200,
@@ -1201,12 +1552,31 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
                 }
                 this.clientAvatar.destroy();
                 this.avatarHitbox.destroy();
-                this.spawnClient();
+                // Only spawn new client if requested (not during day completion)
+                if (shouldSpawnNew) {
+                    this.spawnClient();
+                }
             }
         });
     }
+ 
+    nextClient() {
+        // Remove interaction from current client
+        if (this.avatarHitbox) {
+            this.avatarHitbox.removeInteractive();
+        }
+
+        // Hide any speech bubbles
+        this.hideSpeechBubble();
+        this.removeAvatar();
+
+    }
 
     completeDay() {
+
+        this.removeAvatar(false);
+        this.hideSpeechBubble();
+
         // Show day summary
         const daySummary = this.gameState.getDaySummary();
 
@@ -1357,7 +1727,6 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     updateUI() {
         // Update UI elements
         this.dayText.setText(`Day ${this.gameState.currentDay}`);
-        this.reputationText.setText(`Reputation: ${this.gameState.reputationScore}`);
         this.clientText.setText(`Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`);
     }
 

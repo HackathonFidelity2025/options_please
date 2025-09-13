@@ -58,6 +58,22 @@ export class Preloader extends Scene
         this.load.image('newspaper', 'newspaper-sprite.png');
         this.load.image('handbook-page', 'handbook-page.png');
 
+        // Load keyboard background layers for animation
+        this.load.image('keyboard1', 'backgrounds/keyboard/keyboard1.png');
+        this.load.image('keyboard2', 'backgrounds/keyboard/keyboard2.png');
+        this.load.image('keyboard3', 'backgrounds/keyboard/keyboard3.png');
+        this.load.image('keyboard4', 'backgrounds/keyboard/keyboard4.png');
+
+        // Load phone background layers for animation
+        this.load.image('phone1', 'backgrounds/phone/phone1.png');
+        this.load.image('phone2', 'backgrounds/phone/phone2.png');
+        this.load.image('phone3', 'backgrounds/phone/phone3.png');
+        this.load.image('phone4', 'backgrounds/phone/phone4.png');
+
+        // Load paper background layers for animation
+        this.load.image('paper1', 'backgrounds/paper/paper1.png');
+        this.load.image('paper2', 'backgrounds/paper/paper2.png');
+
 
         // Load all client voices
         // this.load.audio('tech-bro', 'tech-bro.mp3');
