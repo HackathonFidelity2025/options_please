@@ -8,16 +8,33 @@ export class GameOver extends Scene
         super('GameOver');
     }
 
-    create ()
+    create (data)
     {
+        // Determine if this is a victory or defeat
+        this.isVictory = data && data.victory === true;
+        this.isVictory = true;
+        
         // Start with trading floor ambience, then fade to silence
         this.sound.stopAll();
         
         // Black background initially
         this.add.rectangle(512, 384, 1024, 768, 0x000000);
 
-        // Termination dialogue lines
-        this.terminationLines = [
+        // Dialogue lines based on outcome
+        this.dialogueLines = this.isVictory ? [
+            "The door opens.",
+            "Your manager enters, carrying a file of reports.",
+            "He scans them quietly, then looks up.",
+            "",
+            '"You\'ve made wise calls.',
+            'The clients trust you.',
+            'The desk has grown stronger under your judgment."',
+            "",
+            "He closes the file.",
+            "",
+            '"Congratulations.',
+            'You are promoted to Senior Advisor."'
+        ] : [
             "The door creaks open.",
             "Your manager steps in, silent at first.",
             "",
@@ -31,7 +48,7 @@ export class GameOver extends Scene
         ];
 
         this.currentLineIndex = 0;
-        this.typingSpeed = 80; // Slower, more ominous
+        this.typingSpeed = this.isVictory ? 60 : 80; // Faster typing for victory
         this.isTyping = false;
         this.phase = 'audio'; // audio -> dialogue -> stamp -> credits
 
@@ -39,7 +56,7 @@ export class GameOver extends Scene
         this.currentText = this.add.text(512, 350, '', {
             fontFamily: 'Courier New, monospace',
             fontSize: 26,
-            color: '#ffffff',
+            color: this.isVictory ? '#00ff00' : '#ffffff', // Green for victory
             align: 'center',
             wordWrap: { width: 800 }
         }).setOrigin(0.5).setDepth(10);
@@ -54,7 +71,7 @@ export class GameOver extends Scene
         this.nextButtonText = this.add.text(512, 500, 'CONTINUE', {
             fontFamily: 'Courier New, monospace',
             fontSize: 18,
-            color: '#ffffff',
+            color: this.isVictory ? '#00ff00' : '#ffffff',
             align: 'center'
         }).setOrigin(0.5).setDepth(21);
         this.nextButtonText.setVisible(false);
@@ -73,11 +90,11 @@ export class GameOver extends Scene
             this.nextLine();
         });
 
-        // TERMINATED stamp (initially hidden)
-        this.terminatedStamp = this.add.text(512, 384, 'TERMINATED', {
+        // Status stamp (initially hidden) - TERMINATED or PROMOTED
+        this.statusStamp = this.add.text(512, 384, this.isVictory ? 'PROMOTED' : 'TERMINATED', {
             fontFamily: 'Impact, Arial Black, sans-serif',
             fontSize: 128,
-            color: '#ff0000',
+            color: this.isVictory ? '#00ff00' : '#ff0000',
             stroke: '#000000',
             strokeThickness: 8,
             align: 'center'
@@ -117,12 +134,12 @@ export class GameOver extends Scene
     }
 
     typeCurrentLine() {
-        if (this.currentLineIndex >= this.terminationLines.length) {
-            this.showTerminatedStamp();
+        if (this.currentLineIndex >= this.dialogueLines.length) {
+            this.showStatusStamp();
             return;
         }
 
-        const line = this.terminationLines[this.currentLineIndex];
+        const line = this.dialogueLines[this.currentLineIndex];
         
         // Clear current text
         this.currentText.setText('');
@@ -196,31 +213,48 @@ export class GameOver extends Scene
         this.typeCurrentLine();
     }
 
-    showTerminatedStamp() {
+    showStatusStamp() {
         this.phase = 'stamp';
         
         // Hide dialogue elements
         this.currentText.setVisible(false);
         this.hideNextButton();
 
-        // Show TERMINATED stamp with dramatic effect
-        this.terminatedStamp.setVisible(true);
-        this.terminatedStamp.setAlpha(0);
-        this.terminatedStamp.setScale(0.5);
-        this.terminatedStamp.setRotation(Phaser.Math.DegToRad(-15)); // Slight angle like a stamp
+        // Show status stamp with appropriate effect
+        this.statusStamp.setVisible(true);
+        this.statusStamp.setAlpha(0);
+        this.statusStamp.setScale(0.5);
+        this.statusStamp.setRotation(Phaser.Math.DegToRad(this.isVictory ? 0 : -15)); // Straight for promotion, angled for termination
 
-        // Stamp sound effect
-        this.sound.play('stamp', { volume: 1 });
+        // Stamp sound effect - try to use stamp sound first, fallback to paper-turn
+        try {
+            this.sound.play('stamp', { volume: this.isVictory ? 0.8 : 1.0, rate: this.isVictory ? 1.2 : 1.0 });
+        } catch (e) {
+            this.sound.play('paper-turn', { volume: 0.6, rate: this.isVictory ? 1.2 : 1.0 });
+        }
+
+        // Victory flash effect
+        if (this.isVictory) {
+            // Green flash overlay for victory
+            const flash = this.add.rectangle(512, 384, 1024, 768, 0x00ff00, 0.3);
+            flash.setDepth(90);
+            this.tweens.add({
+                targets: flash,
+                alpha: 0,
+                duration: 200,
+                onComplete: () => flash.destroy()
+            });
+        }
 
         this.tweens.add({
-            targets: this.terminatedStamp,
+            targets: this.statusStamp,
             alpha: 0.9,
             scale: 1,
-            duration: 800,
-            ease: 'Back.easeOut',
+            duration: this.isVictory ? 1200 : 800,
+            ease: this.isVictory ? 'Bounce.easeOut' : 'Back.easeOut',
             onComplete: () => {
                 // Wait then proceed to credits
-                this.time.delayedCall(2500, () => {
+                this.time.delayedCall(this.isVictory ? 3000 : 2500, () => {
                     this.startCredits();
                 });
             }
@@ -230,9 +264,9 @@ export class GameOver extends Scene
     startCredits() {
         this.phase = 'credits';
         
-        // Fade out the TERMINATED stamp
+        // Fade out the status stamp
         this.tweens.add({
-            targets: this.terminatedStamp,
+            targets: this.statusStamp,
             alpha: 0,
             duration: 1000,
             ease: 'Power2'
@@ -303,25 +337,45 @@ export class GameOver extends Scene
     }
 
     playCreditsAudio() {
-        // Play theme
-        this.sound.play('intro', { loop: true, rate: 0.8 });
+        if (this.isVictory) {
+            // Victory credits audio: triumphant theme and sounds
+            this.sound.play('intro', { loop: true, rate: 1.1, volume: 0.7 }); // Slightly faster, triumphant theme
+            
+            this.time.addEvent({
+                delay: 4000,
+                callback: () => {
+                    this.sound.play('hover', { volume: 0.08, rate: 1.2 }); // Bell-like victory chimes
+                },
+                loop: true
+            });
+            
+            this.time.addEvent({
+                delay: 6000,
+                callback: () => {
+                    this.sound.play('keyboard-soft', { volume: 0.06, rate: 1.1 }); // Cheerful typing
+                },
+                loop: true
+            });
+        } else {
+            // Defeat credits audio: somber theme and sounds
+            this.sound.play('intro', { loop: true, rate: 0.8, volume: 0.5 }); // Slower, quieter theme
 
-        // Subtle background sounds during credits
-        this.time.addEvent({
-            delay: 6000,
-            callback: () => {
-                this.sound.play('keyboard-soft', { volume: 0.09, seek: 3 });
-            },
-            loop: true
-        });
-        
-        this.time.addEvent({
-            delay: 7000,
-            callback: () => {
-                this.sound.play('paper-turn2', { volume: 0.05 });
-            },
-            loop: true
-        });
+            this.time.addEvent({
+                delay: 6000,
+                callback: () => {
+                    this.sound.play('keyboard-soft', { volume: 0.05, rate: 0.8 }); // Slow, dejected typing
+                },
+                loop: true
+            });
+            
+            this.time.addEvent({
+                delay: 7000,
+                callback: () => {
+                    this.sound.play('paper-turn2', { volume: 0.03 }); // Quiet paper shuffling
+                },
+                loop: true
+            });
+        }
     }
 
     changeScene() {
