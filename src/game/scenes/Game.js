@@ -510,8 +510,8 @@ export class Game extends Scene {
         this.dayText = this.add.text(50, 50, `Day ${this.gameState.currentDay}`, {
             fontSize: '24px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#000000',
+            stroke: '#ffffff',
             strokeThickness: 2
         });
         this.uiOverlay.add(this.dayText);
@@ -520,8 +520,8 @@ export class Game extends Scene {
         this.clientText = this.add.text(50, 80, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
+            color: '#000000',
+            stroke: '#ffffff',
             strokeThickness: 2
         });
         this.uiOverlay.add(this.clientText);
@@ -1135,7 +1135,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             return;
         }
 
-        // Get client data
+        // Get client data from the clients array
         const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
         
         // Create client files modal container
@@ -1150,8 +1150,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         modal.add(modalBg);
         
         // Modal content
-        const modalWidth = 700;
-        const modalHeight = 600;
+        const modalWidth = 500;
+        const modalHeight = 400;
         const modalX = (1024 - modalWidth) / 2;
         const modalY = (768 - modalHeight) / 2;
 
@@ -1172,12 +1172,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         }).setOrigin(0.5);
         modal.add(titleText);
 
-        // Client Information Section
-        const clientInfoY = modalY + 80;
+        // Client Name Section
+        const nameY = modalY + 80;
         const clientName = clientData ? clientData.name : 'Unknown Client';
-        const clientDesc = clientData ? clientData.description : 'No description available';
         
-        const clientNameText = this.add.text(modalX + 20, clientInfoY, `CLIENT: ${clientName.toUpperCase()}`, {
+        const clientNameText = this.add.text(modalX + 20, nameY, `CLIENT: ${clientName.toUpperCase()}`, {
             fontSize: '20px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#3498db',
@@ -1186,103 +1185,46 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         });
         modal.add(clientNameText);
 
-        const clientDescText = this.add.text(modalX + 20, clientInfoY + 30, clientDesc, {
-            fontSize: '14px',
+        // Client Description Section
+        const descY = nameY + 40;
+        const clientDesc = clientData ? clientData.description : 'No description available';
+        
+        console.log('Client data:', clientData);
+        console.log('Client description:', clientDesc);
+        
+        const clientDescText = this.add.text(modalX + 20, descY, clientDesc, {
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
+            color: '#ffffff',
             stroke: '#000000',
-            strokeThickness: 1,
+            strokeThickness: 2,
             wordWrap: { width: modalWidth - 40 }
         });
         modal.add(clientDescText);
 
-        // Scenario Information Section
-        const scenarioY = clientInfoY + 80;
-        const scenarioNameText = this.add.text(modalX + 20, scenarioY, `CASE: ${this.currentClient.name.toUpperCase()}`, {
-            fontSize: '18px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#e74c3c',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        modal.add(scenarioNameText);
-
-        const scenarioDescText = this.add.text(modalX + 20, scenarioY + 25, this.currentClient.description, {
-            fontSize: '14px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
-            stroke: '#000000',
-            strokeThickness: 1,
-            wordWrap: { width: modalWidth - 40 }
-        });
-        modal.add(scenarioDescText);
-
-        // Opening Statement Section
-        const openingY = scenarioY + 70;
-        const openingTitleText = this.add.text(modalX + 20, openingY, 'CLIENT STATEMENT:', {
+        // Risk Factor Section
+        const riskY = descY + 40;
+        const riskFactor = clientData ? clientData.riskFactor : 'N/A';
+        console.log('Client risk factor:', riskFactor);
+        const riskColor = riskFactor >= 7 ? '#e74c3c' : riskFactor >= 4 ? '#f39c12' : '#27ae60'; // Red for high, orange for medium, green for low
+        
+        const riskTitleText = this.add.text(modalX + 20, riskY, 'CLIENT RISK FACTOR:', {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#f39c12',
             stroke: '#000000',
             strokeThickness: 1
         });
-        modal.add(openingTitleText);
+        modal.add(riskTitleText);
 
-        const openingText = this.add.text(modalX + 20, openingY + 25, `"${this.currentClient.openingStatement}"`, {
-            fontSize: '14px',
+        const riskValueText = this.add.text(modalX + 20, riskY + 25, `${riskFactor}/10`, {
+            fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ecf0f1',
-            stroke: '#000000',
-            strokeThickness: 1,
-            wordWrap: { width: modalWidth - 40 },
-            fontStyle: 'italic'
-        });
-        modal.add(openingText);
-
-        // Available Evidence Section
-        const evidenceY = openingY + 80;
-        const evidenceTitleText = this.add.text(modalX + 20, evidenceY, 'AVAILABLE EVIDENCE:', {
-            fontSize: '16px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#27ae60',
+            color: riskColor,
             stroke: '#000000',
             strokeThickness: 1
         });
-        modal.add(evidenceTitleText);
-
-        let evidenceYOffset = 25;
-        const evidenceTypes = [
-            { key: 'wordOfMouth', label: '• Phone Messages', color: '#3498db' },
-            { key: 'newspaper', label: '• News Articles', color: '#e74c3c' },
-            { key: 'charts', label: '• Financial Charts', color: '#f39c12' },
-            { key: 'graphs', label: '• Market Graphs', color: '#9b59b6' }
-        ];
-
-        evidenceTypes.forEach(evidenceType => {
-            const hasEvidence = this.currentClient.clues && this.currentClient.clues[evidenceType.key];
-            const evidenceText = this.add.text(modalX + 20, evidenceY + evidenceYOffset, 
-                hasEvidence ? evidenceType.label : `${evidenceType.label} (No data)`, {
-                fontSize: '14px',
-                fontFamily: 'Minecraft, Courier New, monospace',
-                color: hasEvidence ? evidenceType.color : '#7f8c8d',
-                stroke: '#000000',
-                strokeThickness: 1
-            });
-            modal.add(evidenceText);
-            evidenceYOffset += 20;
-        });
-
-        // Game State Information
-        const gameStateY = evidenceY + evidenceYOffset + 20;
-        const gameStateText = this.add.text(modalX + 20, gameStateY, 
-            `DAY: ${this.gameState.currentDay} | CLIENT: ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients} | REPUTATION: ${this.gameState.reputationScore}`, {
-            fontSize: '12px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#95a5a6',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        modal.add(gameStateText);
+        modal.add(riskValueText);
 
         // Close button
         const closeButton = this.add.rectangle(512, modalY + modalHeight - 40, 120, 40, 0x8B4513);
@@ -1339,6 +1281,14 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             color: '#000000', // Black text for computer screen
             fontStyle: 'bold',
             align: 'center',
+            textShadow: {
+                offsetX: 2,
+                offsetY: 2,
+                color: '#666666',
+                blur: 0,
+                stroke: false,
+                fill: true
+            },
             wordWrap: { width: 380 },
             resolution: 1, // Lower resolution for more pixelated effect
         }).setOrigin(0.5, 0.25);
