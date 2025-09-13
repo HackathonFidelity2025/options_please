@@ -39,6 +39,11 @@ export class MainMenu extends Scene
         startButton.setInteractive();
         startButton.addListener('pointerover', () => {
             this.sound.play('hover', { volume: 1 });
+            startButton.setFillStyle(0x27ae60);
+        });
+        startButton.addListener('pointerout', () => {
+
+            startButton.setFillStyle(0x00ff00);
         });
         startButton.on('pointerdown', () => this.changeScene());
         startButton.setDepth(100);
