@@ -13,7 +13,7 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.add.image(512, 384, 'background').setDisplaySize(1024, 768);
+        this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
 
         // Play intro theme
         this.sound.play('intro', { loop: true });

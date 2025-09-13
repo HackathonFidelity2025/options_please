@@ -10,7 +10,7 @@ export class Preloader extends Scene
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
-        this.add.image(512, 384, 'background').setDisplaySize(1024, 768);
+        this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
 
         //  A simple progress bar. This is the outline of the bar.
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
@@ -101,6 +101,8 @@ export class Preloader extends Scene
         this.load.audio('paper-turn', 'sounds/paper-turn.wav');
         this.load.audio('paper-turn2', 'sounds/paper-turn2.mp3');
         this.load.audio('printer', 'sounds/printer.mp3');
+        this.load.audio('knock', 'sounds/knock-on-a-door.mp3');
+        this.load.audio('stamp', 'sounds/stamp.mp3');
     }
 
     create ()
@@ -108,7 +110,8 @@ export class Preloader extends Scene
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
         //  For example, you can define global animations here, so we can use them in other scenes.
 
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+        //  Move to the Intro scene. You could also swap this for a Scene Transition, such as a camera fade.
+        //this.scene.start('Intro');
         this.scene.start('MainMenu');
     }
 }
