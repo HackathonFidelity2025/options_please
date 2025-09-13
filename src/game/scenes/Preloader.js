@@ -56,6 +56,7 @@ export class Preloader extends Scene
 
         // Load all clue assets
         this.load.image('newspaper', 'newspaper-sprite.png');
+        this.load.image('handbook-page', 'handbook-page.png');
 
 
         // Load all client voices
