@@ -85,6 +85,8 @@ export class Game extends Scene
         
         // Add hover events to show/hide labels
         this.clueElements[key].on('pointerover', () => {
+            // Play hover sound
+            this.sound.play('hover', { rate: 1 });
             // Show label on hover
             this.tweens.add({
                 targets: [labelBg, label],
@@ -299,6 +301,8 @@ export class Game extends Scene
             duration: 800,
             ease: 'Back.easeOut',
             onComplete: () => {
+                // Play client voice
+                this.sound.play("old-man", { rate: 1 });
                 // Create avatar label after positioning is complete
                 this.createAvatarLabel();
                 this.showClientOpeningStatement();

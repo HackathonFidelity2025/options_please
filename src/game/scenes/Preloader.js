@@ -47,6 +47,19 @@ export class Preloader extends Scene
         
         // Load scenario data
         this.load.json('scenarios', 'scenarios.json');
+
+        // Load all client voices
+        // this.load.audio('tech-bro', 'tech-bro.mp3');
+        // this.load.audio('man', 'man.mp3');
+        // this.load.audio('woman', 'woman.mp3');
+        // this.load.audio('young-woman', 'young-woman.mp3');
+        // this.load.audio('young-man', 'young-man.mp3');
+        this.load.audio('old-man', 'sounds/old-man.m4a');
+        // this.load.audio('sad-businessman', 'sad-businessman.m4a');
+        // this.load.audio('shopkeeper', 'shopkeeper.mp3');
+
+        // Load all sound effects
+        this.load.audio('hover', 'sounds/bloop.mp3');
     }
 
     create ()
