@@ -508,7 +508,7 @@ export class Game extends Scene {
 
         // Day counter
         this.dayText = this.add.text(50, 50, `Day ${this.gameState.currentDay}`, {
-            fontSize: '24px',
+            fontSize: '28px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
             stroke: '#ffffff',
@@ -518,7 +518,7 @@ export class Game extends Scene {
 
         // Client counter
         this.clientText = this.add.text(50, 80, `Client ${this.gameState.clientsCompleted + 1}/${this.gameState.totalClients}`, {
-            fontSize: '18px',
+            fontSize: '22px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#000000',
             stroke: '#ffffff',
@@ -735,9 +735,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const closeButtonText = this.add.text(530, modalY + 720, 'Close', {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(closeButtonText);
 
@@ -767,11 +769,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(prevButton);
 
         const prevButtonText = this.add.text(modalX + 200, buttonY, 'Previous', {
-            fontSize: '14px',
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(prevButtonText);
 
@@ -797,11 +801,13 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(nextButton);
 
         const nextButtonText = this.add.text(modalX + modalWidth - 150, buttonY, 'Next', {
-            fontSize: '14px',
+            fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#2c3e50', // Dark text for paper background
-            stroke: '#ffffff',
-            strokeThickness: 1
+            color: '#ffffff',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1,
+            resolution: 1
         }).setOrigin(0.5);
         this.guidebookModal.add(nextButtonText);
 
@@ -1051,12 +1057,35 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.bubbleText.setOrigin(0.5);
         this.bubbleText.setDepth(76);
 
+        // Add red X close button
+        const closeX = bubbleX + bubbleWidth / 2 - 20;
+        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        
+        this.speechBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
+        this.speechBubbleCloseButton.setInteractive();
+        this.speechBubbleCloseButton.setDepth(77);
+        this.speechBubbleCloseButton.on('pointerdown', () => {
+            this.hideSpeechBubble();
+        });
+
+        // Add X text
+        this.speechBubbleCloseText = this.add.text(closeX, closeY, 'X', {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            fontStyle: 'bold'
+        });
+        this.speechBubbleCloseText.setOrigin(0.5);
+        this.speechBubbleCloseText.setDepth(78);
+
         // Animate in
         this.speechBubble.setAlpha(0);
         this.bubbleText.setAlpha(0);
+        this.speechBubbleCloseButton.setAlpha(0);
+        this.speechBubbleCloseText.setAlpha(0);
 
         this.tweens.add({
-            targets: [this.speechBubble, this.bubbleText],
+            targets: [this.speechBubble, this.bubbleText, this.speechBubbleCloseButton, this.speechBubbleCloseText],
             alpha: 1,
             duration: 300,
             ease: 'Power2'
@@ -1064,17 +1093,118 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     hideSpeechBubble() {
-        if (this.speechBubble && this.bubbleText) {
+        if (this.speechBubble && this.bubbleText && this.speechBubbleCloseButton && this.speechBubbleCloseText) {
             this.tweens.add({
-                targets: [this.speechBubble, this.bubbleText],
+                targets: [this.speechBubble, this.bubbleText, this.speechBubbleCloseButton, this.speechBubbleCloseText],
                 alpha: 0,
                 duration: 300,
                 ease: 'Power2',
                 onComplete: () => {
                     this.speechBubble.destroy();
                     this.bubbleText.destroy();
+                    this.speechBubbleCloseButton.destroy();
+                    this.speechBubbleCloseText.destroy();
                     this.speechBubble = null;
                     this.bubbleText = null;
+                    this.speechBubbleCloseButton = null;
+                    this.speechBubbleCloseText = null;
+                }
+            });
+        }
+    }
+
+    showPhoneBubble(text) {
+        // Hide any existing phone bubble first
+        this.hidePhoneBubble();
+        
+        // Create phone bubble positioned above the phone
+        const bubbleWidth = 280;
+        const bubbleHeight = 100;
+        const bubbleX = 805; // Phone X position
+        const bubbleY = 400; // Above the phone
+
+        this.phoneBubble = this.add.graphics();
+        this.phoneBubble.setDepth(75);
+
+        // Draw bubble
+        this.phoneBubble.fillStyle(0x000000, 0.95);
+        this.phoneBubble.lineStyle(3, 0xffffff, 1);
+        this.phoneBubble.fillRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+        this.phoneBubble.strokeRoundedRect(bubbleX - bubbleWidth / 2, bubbleY - bubbleHeight / 2, bubbleWidth, bubbleHeight, 15);
+
+        // Draw tail pointing down to phone
+        const tailPoints = [
+            bubbleX, bubbleY + bubbleHeight / 2,
+            bubbleX - 20, bubbleY + bubbleHeight / 2 + 25,
+            bubbleX + 20, bubbleY + bubbleHeight / 2 + 25
+        ];
+        this.phoneBubble.fillStyle(0x000000, 0.95);
+        this.phoneBubble.lineStyle(3, 0xffffff, 1);
+        this.phoneBubble.fillTriangle(...tailPoints);
+        this.phoneBubble.strokeTriangle(...tailPoints);
+
+        // Add text
+        this.phoneBubbleText = this.add.text(bubbleX, bubbleY - 10, text, {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            align: 'center',
+            wordWrap: { width: bubbleWidth - 40 }
+        });
+        this.phoneBubbleText.setOrigin(0.5);
+        this.phoneBubbleText.setDepth(76);
+
+        // Add red X close button
+        const closeX = bubbleX + bubbleWidth / 2 - 20;
+        const closeY = bubbleY - bubbleHeight / 2 + 20;
+        
+        this.phoneBubbleCloseButton = this.add.rectangle(closeX, closeY, 20, 20, 0xff0000);
+        this.phoneBubbleCloseButton.setInteractive();
+        this.phoneBubbleCloseButton.setDepth(77);
+        this.phoneBubbleCloseButton.on('pointerdown', () => {
+            this.hidePhoneBubble();
+        });
+
+        // Add X text
+        this.phoneBubbleCloseText = this.add.text(closeX, closeY, 'X', {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '14px',
+            color: 'white',
+            fontStyle: 'bold'
+        });
+        this.phoneBubbleCloseText.setOrigin(0.5);
+        this.phoneBubbleCloseText.setDepth(78);
+
+        // Animate in
+        this.phoneBubble.setAlpha(0);
+        this.phoneBubbleText.setAlpha(0);
+        this.phoneBubbleCloseButton.setAlpha(0);
+        this.phoneBubbleCloseText.setAlpha(0);
+
+        this.tweens.add({
+            targets: [this.phoneBubble, this.phoneBubbleText, this.phoneBubbleCloseButton, this.phoneBubbleCloseText],
+            alpha: 1,
+            duration: 300,
+            ease: 'Power2'
+        });
+    }
+
+    hidePhoneBubble() {
+        if (this.phoneBubble && this.phoneBubbleText && this.phoneBubbleCloseButton && this.phoneBubbleCloseText) {
+            this.tweens.add({
+                targets: [this.phoneBubble, this.phoneBubbleText, this.phoneBubbleCloseButton, this.phoneBubbleCloseText],
+                alpha: 0,
+                duration: 300,
+                ease: 'Power2',
+                onComplete: () => {
+                    this.phoneBubble.destroy();
+                    this.phoneBubbleText.destroy();
+                    this.phoneBubbleCloseButton.destroy();
+                    this.phoneBubbleCloseText.destroy();
+                    this.phoneBubble = null;
+                    this.phoneBubbleText = null;
+                    this.phoneBubbleCloseButton = null;
+                    this.phoneBubbleCloseText = null;
                 }
             });
         }
@@ -1096,7 +1226,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     showWordOfMouthClue() {
         const clue = this.scenarioManager.getClueByCategory(this.currentClient, 'wordOfMouth');
         if (clue) {
-            this.showClueModal('Word of Mouth', clue);
+            this.showPhoneBubble(clue);
         }
     }
 
@@ -1176,7 +1306,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const nameY = modalY + 80;
         const clientName = clientData ? clientData.name : 'Unknown Client';
         
-        const clientNameText = this.add.text(modalX + 20, nameY, `CLIENT: ${clientName.toUpperCase()}`, {
+        const clientNameText = this.add.text(modalX + 20, nameY, `${clientName.toUpperCase()}`, {
             fontSize: '20px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#3498db',
@@ -1203,7 +1333,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         modal.add(clientDescText);
 
         // Risk Factor Section
-        const riskY = descY + 40;
+        const riskY = descY + 60;
         const riskFactor = clientData ? clientData.riskFactor : 'N/A';
         console.log('Client risk factor:', riskFactor);
         const riskColor = riskFactor >= 7 ? '#e74c3c' : riskFactor >= 4 ? '#f39c12' : '#27ae60'; // Red for high, orange for medium, green for low
@@ -1278,14 +1408,16 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         const header = this.add.text(500, 218, headerText, {
             fontFamily: '"Minecraft", "Courier New", monospace',
             fontSize: '38px',
-            color: '#000000', // Black text for computer screen
+            color: '#ffffff', // White text for better visibility
             fontStyle: 'bold',
             align: 'center',
+            stroke: '#000000',
+            strokeThickness: 2,
             textShadow: {
-                offsetX: 2,
-                offsetY: 2,
-                color: '#666666',
-                blur: 0,
+                offsetX: 1,
+                offsetY: 1,
+                color: '#333333',
+                blur: 2,
                 stroke: false,
                 fill: true
             },
@@ -1659,6 +1791,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Hide opening statement bubble and then show outcome after animation completes
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
         this.time.delayedCall(350, () => {
             this.showOutcome(outcome);
         });
@@ -1720,6 +1853,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Hide any speech bubbles
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
         this.removeAvatar();
 
     }
@@ -1728,6 +1862,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         this.removeAvatar(false);
         this.hideSpeechBubble();
+        this.hidePhoneBubble();
 
         // Show day summary
         const daySummary = this.gameState.getDaySummary();

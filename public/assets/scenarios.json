@@ -74,7 +74,7 @@
       "riskFactor": 3,
       "openingStatement": "I've been watching GPU Makers Inc. closely. Their graphics chips are everywhere in gaming and AI. What do you think of their stock?",
       "clues": {
-        "wordOfMouth": [],
+        "wordOfMouth": ["testing word out mouth. remove later"],
         "newspaper": [
           "GPU Makers Inc. earnings report 3x higher than expected."
         ],
@@ -115,25 +115,7 @@
         ],
         "charts": [
           {
-            "type": "trend",
-            "data": [
-              85,
-              82,
-              78,
-              75,
-              68,
-              63,
-              50
-            ],
-            "labels": [
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-              "Mon",
-              "Tue"
-            ],
+            "type": "graph-down",
             "title": "TerraFuel Corp. Stock Price Decline"
           }
         ]
@@ -204,22 +186,8 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              100,
-              120,
-              150,
-              180,
-              220
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
-            "title": "CodeLogic Revenue Growth"
+            "type": "pie-green",
+            "title": "Codelogic Job Losses"
           }
         ]
       },
@@ -290,21 +258,7 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              345,
-              300,
-              112,
-              158,
-              190
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
+            "type": "graph-down",
             "title": "NovaTech Revenue Growth"
           }
         ]
@@ -342,21 +296,7 @@
         ],
         "charts": [
           {
-            "type": "revenue",
-            "data": [
-              90,
-              115,
-              128,
-              140,
-              168
-            ],
-            "labels": [
-              "Q1",
-              "Q2",
-              "Q3",
-              "Q4",
-              "Projected"
-            ],
+            "type": "graph-up",
             "title": "AgriTech Steady Revenue Growth"
           }
         ]
@@ -392,30 +332,7 @@
         "newspaper": [
           "Zenith earnings slightly above expectations."
         ],
-        "charts": [
-          {
-            "type": "trend",
-            "data": [
-              45,
-              68,
-              20,
-              10,
-              30,
-              32,
-              40
-            ],
-            "labels": [
-              "Mon",
-              "Tue",
-              "Wed",
-              "Thu",
-              "Fri",
-              "Mon",
-              "Tue"
-            ],
-            "title": "Zenith Corp. Stock Price fluctuations "
-          }
-        ]
+        "charts": []
       },
       "outcomes": {
         "call": {
