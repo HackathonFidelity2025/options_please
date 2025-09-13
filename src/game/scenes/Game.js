@@ -40,29 +40,130 @@ export class Game extends Scene
     }
 
     createDeskElements() {
-        // Create interactive desk elements
-        // Phone for word of mouth clues
-        this.clueElements.phone = this.add.rectangle(200, 600, 60, 40, 0x8B4513);
-        this.clueElements.phone.setInteractive();
-        this.clueElements.phone.on('pointerdown', () => this.showWordOfMouthClue());
-        this.clueElements.phone.setDepth(10);
+        // Create interactive desk elements with paired labels
+        this.createInteractiveElement('phone', 805, 545, 140, 110, 0x8B4513, 'Phone', () => this.showWordOfMouthClue());
+        this.createInteractiveElement('computer', 585, 425, 220, 200, 0x000000, 'Computer', () => this.showComputerClue());
+        this.createInteractiveElement('newspaper', 150, 590, 150, 160, 0xFFFFFF, 'News', () => this.showNewspaperClue());
+        this.createInteractiveElement('keyboard', 520, 610, 340, 100, 0x333333, 'Recommend', () => this.showDecisionModal());
+    }
+
+    createInteractiveElement(key, x, y, width, height, color, labelText, onClick) {
+        // Create the interactive rectangle
+        this.clueElements[key] = this.add.rectangle(x, y, width, height, color);
+        this.clueElements[key].setInteractive();
+        this.clueElements[key].on('pointerdown', onClick);
+        this.clueElements[key].setDepth(10);
         
-        // Computer terminal for charts/graphs
-        this.clueElements.computer = this.add.rectangle(800, 500, 120, 80, 0x000000);
-        this.clueElements.computer.setInteractive();
-        this.clueElements.computer.on('pointerdown', () => this.showComputerClue());
-        this.clueElements.computer.setDepth(10);
+        // Create the label positioned in the center of the element
+        const labelX = x; // Center horizontally
+        const labelY = y; // Center vertically
         
-        // Newspaper stack for headlines
-        this.clueElements.newspaper = this.add.rectangle(150, 500, 40, 60, 0xFFFFFF);
-        this.clueElements.newspaper.setInteractive();
-        this.clueElements.newspaper.on('pointerdown', () => this.showNewspaperClue());
-        this.clueElements.newspaper.setDepth(10);
+        // Create the label text first to get its actual dimensions
+        const label = this.add.text(labelX, labelY, labelText, { 
+            fontSize: '20px', // Increased font size
+            color: '#ffffff',
+            fontFamily: 'Courier New, monospace' // Monospace font for retro feel
+        }).setDepth(15);
+        label.setOrigin(0.5, 0.5); // Center the text origin
+        label.setAlpha(0); // Start hidden
         
-        // Add labels for clarity
-        this.add.text(200, 650, 'Phone', { fontSize: '16px', color: '#ffffff' }).setDepth(15);
-        this.add.text(800, 580, 'Computer', { fontSize: '16px', color: '#ffffff' }).setDepth(15);
-        this.add.text(150, 580, 'News', { fontSize: '16px', color: '#000000' }).setDepth(15);
+        // Get actual text dimensions
+        const textWidth = label.width;
+        const textHeight = label.height;
+        const paddingX = 8; // Horizontal padding
+        const paddingY = 2; // Vertical padding
+        const bgWidth = textWidth + (paddingX * 2);
+        const bgHeight = textHeight + (paddingY * 2);
+        
+        // Create label background (retro label printer style) - initially hidden
+        const labelBg = this.add.graphics();
+        labelBg.fillStyle(0x000000, 0.7); // Black background with 0.7 opacity
+        // Center the background around the centered text
+        labelBg.fillRoundedRect(labelX - (bgWidth / 2), labelY - (bgHeight / 2), bgWidth, bgHeight, 3);
+        labelBg.setDepth(14);
+        labelBg.setAlpha(0); // Start hidden
+        
+        // Add hover events to show/hide labels
+        this.clueElements[key].on('pointerover', () => {
+            // Show label on hover
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 1,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+        
+        this.clueElements[key].on('pointerout', () => {
+            // Hide label when not hovering
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 0,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+        
+        // Store references for potential future use
+        this.clueElements[key].label = label;
+        this.clueElements[key].labelBg = labelBg;
+    }
+
+    createAvatarLabel() {
+        if (!this.avatarHitbox) return;
+        
+        // Create label using the same pattern as desk elements
+        const labelText = 'Chat';
+        const labelX = this.avatarHitbox.x - 20; // Top left of hitbox
+        const labelY = this.avatarHitbox.y - 20;
+        
+        // Create the label text first to get its actual dimensions
+        const label = this.add.text(labelX, labelY, labelText, { 
+            fontSize: '20px',
+            color: '#ffffff',
+            fontFamily: 'Courier New, monospace'
+        }).setDepth(200);
+        label.setAlpha(0); // Start hidden
+        
+        // Get actual text dimensions
+        const textWidth = label.width;
+        const textHeight = label.height;
+        const paddingX = 8;
+        const paddingY = 2;
+        const bgWidth = textWidth + (paddingX * 2);
+        const bgHeight = textHeight + (paddingY * 2);
+        
+        // Create label background
+        const labelBg = this.add.graphics();
+        labelBg.fillStyle(0x000000, 0.7);
+        labelBg.fillRoundedRect(labelX - paddingX, labelY - paddingY, bgWidth, bgHeight, 3);
+        labelBg.setDepth(199);
+        labelBg.setAlpha(0); // Start hidden
+        
+        // Add hover events to the existing hitbox
+        this.avatarHitbox.on('pointerover', () => {
+            console.log('Avatar hover detected!');
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 1,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+        
+        this.avatarHitbox.on('pointerout', () => {
+            console.log('Avatar hover ended!');
+            this.tweens.add({
+                targets: [labelBg, label],
+                alpha: 0,
+                duration: 200,
+                ease: 'Power2'
+            });
+        });
+        
+        // Store references for cleanup
+        this.avatarHitbox.chatLabel = label;
+        this.avatarHitbox.chatLabelBg = labelBg;
     }
 
     createUIOverlay() {
@@ -184,13 +285,22 @@ export class Game extends Scene
         this.clientAvatar.setScale(0.3);
         this.clientAvatar.setDepth(50);
         
+        // Create a larger hitbox for better interaction (temporarily visible for debugging)
+        this.avatarHitbox = this.add.rectangle(-200, 335, 130, 295, 0xff0000, 0.3);
+        this.avatarHitbox.setInteractive();
+        this.avatarHitbox.setDepth(51); // Above the avatar
+        
+        // Avatar label will be created after slide-in animation completes
+        
         // Slide client in
         this.tweens.add({
-            targets: this.clientAvatar,
-            x: 200,
+            targets: [this.clientAvatar, this.avatarHitbox],
+            x: 250,
             duration: 800,
             ease: 'Back.easeOut',
             onComplete: () => {
+                // Create avatar label after positioning is complete
+                this.createAvatarLabel();
                 this.showClientOpeningStatement();
             }
         });
@@ -203,22 +313,17 @@ export class Game extends Scene
         // Show opening statement in speech bubble
         this.showSpeechBubble(this.currentClient.openingStatement);
         
-        // Make client avatar clickable to show decision modal
-        this.clientAvatar.setInteractive();
-        this.clientAvatar.on('pointerdown', () => {
-            this.hideSpeechBubble();
-            this.showDecisionModal();
+        // Make client avatar clickable to toggle opening dialogue
+        this.avatarHitbox.on('pointerdown', () => {
+            if (this.speechBubble && this.speechBubble.alpha > 0) {
+                // Hide speech bubble if it's visible
+                this.hideSpeechBubble();
+            } else {
+                // Show speech bubble if it's hidden
+                this.showSpeechBubble(this.currentClient.openingStatement);
+            }
         });
         
-        // Add visual indicator that client is clickable
-        this.tweens.add({
-            targets: this.clientAvatar,
-            scaleX: 0.35,
-            scaleY: 0.35,
-            duration: 1000,
-            yoyo: true,
-            repeat: -1
-        });
     }
 
     showSpeechBubble(text) {
@@ -472,6 +577,30 @@ export class Game extends Scene
             strokeThickness: 1
         }).setOrigin(0.5);
         this.decisionModal.add(holdButtonText);
+        
+        // Close button
+        const closeButton = this.add.rectangle(512, modalY + 220, 100, 30, 0x666666);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            this.hideDecisionModal();
+        });
+        this.decisionModal.add(closeButton);
+        
+        const closeButtonText = this.add.text(512, modalY + 220, 'Close', {
+            fontSize: '16px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        this.decisionModal.add(closeButtonText);
+    }
+
+    hideDecisionModal() {
+        // Hide decision modal
+        if (this.decisionModal) {
+            this.decisionModal.destroy();
+            this.decisionModal = null;
+        }
     }
 
     makeDecision(decision) {
@@ -481,10 +610,7 @@ export class Game extends Scene
         }
         
         // Hide decision modal
-        if (this.decisionModal) {
-            this.decisionModal.destroy();
-            this.decisionModal = null;
-        }
+        this.hideDecisionModal();
         
         // Get outcome
         const outcome = this.scenarioManager.getOutcome(this.currentClient, decision);
@@ -527,18 +653,29 @@ export class Game extends Scene
 
     nextClient() {
         // Remove interaction from current client
-        if (this.clientAvatar) {
-            this.clientAvatar.removeInteractive();
+        if (this.avatarHitbox) {
+            this.avatarHitbox.removeInteractive();
         }
+        
+        // Hide any speech bubbles
+        this.hideSpeechBubble();
         
         // Slide current client out
         this.tweens.add({
-            targets: this.clientAvatar,
+            targets: [this.clientAvatar, this.avatarHitbox],
             x: -200,
             duration: 500,
             ease: 'Power2',
             onComplete: () => {
+                // Clean up chat label before destroying avatar
+                if (this.avatarHitbox.chatLabel) {
+                    this.avatarHitbox.chatLabel.destroy();
+                }
+                if (this.avatarHitbox.chatLabelBg) {
+                    this.avatarHitbox.chatLabelBg.destroy();
+                }
                 this.clientAvatar.destroy();
+                this.avatarHitbox.destroy();
                 this.spawnClient();
             }
         });
