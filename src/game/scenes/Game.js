@@ -2674,44 +2674,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             yOffset += 10;
         });
 
-        // Reputation section
-        const reputationY = modalY + modalHeight - 220;
-        const daySummary = this.gameState.getDaySummary();
-        const reputationChange = daySummary.reputationChange;
-        const currentReputation = this.gameState.reputationScore;
-        
-        const reputationTitle = this.add.text(modalX + 20, reputationY, 'Professional Reputation:', {
-            fontSize: '18px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#f39c12',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        analyticsModal.add(reputationTitle);
-        
-        // Reputation score display
-        const reputationText = this.add.text(modalX + 20, reputationY + 25, `Current Score: ${currentReputation}`, {
-            fontSize: '16px',
-            fontFamily: 'Minecraft, Courier New, monospace',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 1
-        });
-        analyticsModal.add(reputationText);
-        
-        // Reputation change display with color coding
-        if (reputationChange !== 0) {
-            const changeColor = reputationChange > 0 ? '#2ecc71' : '#e74c3c'; // Green for positive, red for negative
-            const changeSymbol = reputationChange > 0 ? '+' : '';
-            const changeText = this.add.text(modalX + 200, reputationY + 25, `(${changeSymbol}${reputationChange})`, {
-                fontSize: '16px',
-                fontFamily: 'Minecraft, Courier New, monospace',
-                color: changeColor,
-                stroke: '#000000',
-                strokeThickness: 1
-            });
-            analyticsModal.add(changeText);
-        }
+        // Reputation section is displayed below in the Professional Reputation block
 
         // Key insights section
         const insightsY = modalY + modalHeight - 200;

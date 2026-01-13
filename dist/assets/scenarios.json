@@ -351,6 +351,42 @@
           "message": "You held which was the safe choice, but there was money to be made"
         }
       }
+    },
+    {
+      "id": "quantum_leap_software",
+      "client": "young_woman",
+      "name": "Quantum Leap Software IPO",
+      "description": "Quantum Leap Software is going public with strong momentum",
+      "openingStatement": "Quantum Leap Software just announced their IPO. I've heard great things about their AI platform. Should I invest?",
+      "clues": {
+        "wordOfMouth": [
+          "Everyone in tech is talking about their AI platform. It's revolutionary."
+        ],
+        "newspaper": [
+          "Quantum Leap Software IPO sees record demand on first day."
+        ],
+        "charts": {
+          "type": "graph-up",
+          "title": "Quantum Leap Stock Price Surge"
+        }
+      },
+      "outcomes": {
+        "call": {
+          "success": true,
+          "reputationChange": 25,
+          "message": "Excellent timing! Quantum Leap's AI platform became the industry standard. Great investment!"
+        },
+        "put": {
+          "success": false,
+          "reputationChange": -8,
+          "message": "Unfortunately, the IPO momentum carried through. You missed out on gains."
+        },
+        "hold": {
+          "success": true,
+          "reputationChange": 5,
+          "message": "Safe choice. The stock did well, but you could have capitalized on the IPO hype."
+        }
+      }
     }
   ]
 }
