@@ -19,6 +19,12 @@ export class Game extends Scene {
         // Analytics tracking
         this.currentScenarioAnalytics = null;
         this.dailyAnalytics = [];
+        
+        // Tutorial tracking
+        this.tutorialEnabled = true; // Tutorial enabled for day 1
+        this.firstClueViewed = false; // Track if player viewed first clue
+        this.tutorialText = null; // Main tutorial text element
+        this.tutorialTextBg = null; // Background for tutorial text
     }
 
     // Analytics system methods
@@ -1162,6 +1168,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     startNewDay() {
+        // Reset tutorial flags for each new day (only day 1 has tutorial)
+        this.firstClueViewed = false;
+        // Hide any remaining tutorial text
+        this.hideTutorialText();
+        
         // Show day start modal
         this.showDayStartModal();
     }
@@ -1256,6 +1267,161 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.spawnClient();
     }
 
+    showTutorialText(text) {
+        // Hide existing tutorial text if any
+        if (this.tutorialText) {
+            this.tweens.add({
+                targets: [this.tutorialTextBg, this.tutorialText],
+                alpha: 0,
+                duration: 300,
+                ease: 'Power2',
+                onComplete: () => {
+                    if (this.tutorialTextBg) {
+                        this.tutorialTextBg.destroy();
+                        this.tutorialTextBg = null;
+                    }
+                    if (this.tutorialText) {
+                        this.tutorialText.destroy();
+                        this.tutorialText = null;
+                    }
+                    this.createNewTutorialText(text);
+                }
+            });
+        } else {
+            this.createNewTutorialText(text);
+        }
+    }
+
+    createNewTutorialText(text) {
+        // Create background for tutorial text
+        this.tutorialTextBg = this.add.graphics();
+        this.tutorialTextBg.fillStyle(0x000000, 0.85);
+        this.tutorialTextBg.fillRect(96, 20, 832, 80);
+        this.tutorialTextBg.lineStyle(2, 0xffffff, 1);
+        this.tutorialTextBg.strokeRect(96, 20, 832, 80);
+        this.tutorialTextBg.setDepth(120);
+        this.tutorialTextBg.setAlpha(0);
+
+        // Create tutorial text
+        this.tutorialText = this.add.text(512, 60, text, {
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontSize: '20px',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2,
+            align: 'center',
+            wordWrap: { width: 810 }
+        });
+        this.tutorialText.setOrigin(0.5);
+        this.tutorialText.setDepth(121);
+        this.tutorialText.setAlpha(0);
+
+        // Animate in
+        this.tweens.add({
+            targets: [this.tutorialTextBg, this.tutorialText],
+            alpha: 1,
+            duration: 300,
+            ease: 'Power2'
+        });
+    }
+
+    hideTutorialText() {
+        if (this.tutorialText && this.tutorialTextBg) {
+            this.tweens.add({
+                targets: [this.tutorialTextBg, this.tutorialText],
+                alpha: 0,
+                duration: 300,
+                ease: 'Power2',
+                onComplete: () => {
+                    if (this.tutorialTextBg) {
+                        this.tutorialTextBg.destroy();
+                        this.tutorialTextBg = null;
+                    }
+                    if (this.tutorialText) {
+                        this.tutorialText.destroy();
+                        this.tutorialText = null;
+                    }
+                }
+            });
+        }
+    }
+
+    trackFirstClueViewed() {
+        // Check if this is the first clue viewed during day 1 tutorial
+        if (this.tutorialEnabled && this.gameState.currentDay === 1 && !this.firstClueViewed) {
+            this.firstClueViewed = true;
+            // Show second tutorial message after a short delay
+            this.time.delayedCall(500, () => {
+                const secondTutorialMessage = "Now look for more information, or click your keyboard to make a recommendation. Check the guidebook in the bottom right if you need more assistance. Good Luck!";
+                this.showTutorialText(secondTutorialMessage);
+            });
+        }
+    }
+
+    showNoInfoPopup() {
+        // Create popup container
+        const popup = this.add.container(0, 0);
+        popup.setDepth(180);
+
+        // Modal background - make interactive to block clicks
+        const modalBg = this.add.graphics();
+        modalBg.fillStyle(0x000000, 0.7);
+        modalBg.fillRect(0, 0, 1024, 768);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        popup.add(modalBg);
+
+        // Modal content
+        const modalWidth = 400;
+        const modalHeight = 200;
+        const modalX = (1024 - modalWidth) / 2;
+        const modalY = (768 - modalHeight) / 2;
+
+        const modalContent = this.add.graphics();
+        modalContent.fillStyle(0x333333, 0.95);
+        modalContent.lineStyle(2, 0xffffff, 1);
+        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
+        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
+        popup.add(modalContent);
+
+        // Message text
+        const messageText = this.add.text(512, modalY + 80, 'No new info for today', {
+            fontSize: '24px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2,
+            align: 'center'
+        }).setOrigin(0.5);
+        popup.add(messageText);
+
+        // Close button
+        const closeButton = this.add.rectangle(512, modalY + modalHeight - 45, 120, 40, 0x8B4513);
+        closeButton.setInteractive();
+        closeButton.on('pointerdown', () => {
+            popup.destroy();
+        });
+        popup.add(closeButton);
+
+        const closeButtonText = this.add.text(512, modalY + modalHeight - 45, 'OK', {
+            fontSize: '18px',
+            color: '#ffffff',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            fontStyle: 'bold',
+            stroke: '#000000',
+            strokeThickness: 1
+        }).setOrigin(0.5);
+        popup.add(closeButtonText);
+
+        // Add hover effect to close button
+        closeButton.on('pointerover', () => {
+            closeButton.setFillStyle(0xA0522D);
+        });
+
+        closeButton.on('pointerout', () => {
+            closeButton.setFillStyle(0x8B4513);
+        });
+    }
+
     spawnClient() {
         if (this.clientAvatar) {
             this.clientAvatar.destroy();
@@ -1303,11 +1469,22 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
 
         // Highlight interactive elements
         this.highlightClueElements();
+        
+        // Update UI with current client number
+        this.updateUI();
     }
 
     showClientOpeningStatement() {
         // Show opening statement in speech bubble
         this.showSpeechBubble(this.currentClient.openingStatement); // opening statement should close when a recommendation is made.
+
+        // Show tutorial text on day 1
+        if (this.tutorialEnabled && this.gameState.currentDay === 1 && this.gameState.clientsCompleted === 0) {
+            const clientData = this.scenarioManager.getScenarioClient(this.currentClient);
+            const clientName = clientData ? clientData.name : 'Client';
+            const tutorialMessage = `${clientName} is interested in ${this.currentClient.name}. Click around your desk to uncover data that can inform your recommendation.`;
+            this.showTutorialText(tutorialMessage);
+        }
 
         // Make client avatar clickable to toggle opening dialogue
         this.avatarHitbox.on('pointerdown', () => {
@@ -1404,14 +1581,22 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
                 duration: 300,
                 ease: 'Power2',
                 onComplete: () => {
-                    this.speechBubble.destroy();
-                    this.bubbleText.destroy();
-                    this.speechBubbleCloseButton.destroy();
-                    this.speechBubbleCloseText.destroy();
-                    this.speechBubble = null;
-                    this.bubbleText = null;
-                    this.speechBubbleCloseButton = null;
-                    this.speechBubbleCloseText = null;
+                    if (this.speechBubble) {
+                        this.speechBubble.destroy();
+                        this.speechBubble = null;
+                    }
+                    if (this.bubbleText) {
+                        this.bubbleText.destroy();
+                        this.bubbleText = null;
+                    }
+                    if (this.speechBubbleCloseButton) {
+                        this.speechBubbleCloseButton.destroy();
+                        this.speechBubbleCloseButton = null;
+                    }
+                    if (this.speechBubbleCloseText) {
+                        this.speechBubbleCloseText.destroy();
+                        this.speechBubbleCloseText = null;
+                    }
                 }
             });
         }
@@ -1501,14 +1686,23 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
                 duration: 300,
                 ease: 'Power2',
                 onComplete: () => {
-                    this.phoneBubble.destroy();
-                    this.phoneBubbleText.destroy();
-                    this.phoneBubbleCloseButton.destroy();
-                    this.phoneBubbleCloseText.destroy();
-                    this.phoneBubble = null;
-                    this.phoneBubbleText = null;
-                    this.phoneBubbleCloseButton = null;
-                    this.phoneBubbleCloseText = null;
+                    if (this.phoneBubble) {
+                        this.phoneBubble.destroy();
+                        this.phoneBubble = null;
+                    }
+                    if (this.phoneBubbleText) {
+                        this.phoneBubbleText.destroy();
+                        this.phoneBubbleText = null;
+                    }
+                    if (this.phoneBubbleCloseButton) {
+                        this.phoneBubbleCloseButton.destroy();
+                        this.phoneBubbleCloseButton = null;
+                    }
+                    if (this.phoneBubbleCloseText) {
+                        this.phoneBubbleCloseText.destroy();
+                        this.phoneBubbleCloseText = null;
+                    }
+                    this.trackFirstClueViewed();
                 }
             });
         }
@@ -1532,6 +1726,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         if (clue) {
             this.trackClueAccessed('wordOfMouth');
             this.showPhoneBubble(clue);
+        } else {
+            this.showNoInfoPopup();
         }
     }
 
@@ -1554,8 +1750,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             
             this.showComputerModal(imageKey, chartData.title);
         } else {
-            // Fallback if no chart data is available
-            this.showComputerModal('graph-down', 'MARKET ANALYSIS REPORT');
+            // Show no info popup instead of showing a fallback modal
+            this.showNoInfoPopup();
         }
     }
 
@@ -1565,6 +1761,8 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.trackClueAccessed('newspaper');
             this.showNewspaperModal(clue);
             this.sound.play('paper-turn', { volume: 1 });
+        } else {
+            this.showNoInfoPopup();
         }
     }
 
@@ -1672,6 +1870,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => {
             modal.destroy();
+            this.trackFirstClueViewed();
         });
         modal.add(closeButton);
         
@@ -1742,6 +1941,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => {
             modal.destroy();
+            this.trackFirstClueViewed();
         });
         modal.add(closeButton);
         
@@ -1834,6 +2034,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => {
             modal.destroy();
+            this.trackFirstClueViewed();
         });
         modal.add(closeButton);
         
@@ -2243,6 +2444,11 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
             this.clientAvatar.removeInteractive();
         }
 
+        // Hide tutorial text after first decision on day 1
+        if (this.tutorialEnabled && this.gameState.currentDay === 1) {
+            this.hideTutorialText();
+        }
+
         // Hide decision modal
         this.hideDecisionModal();
 
@@ -2280,9 +2486,6 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.time.delayedCall(350, () => {
             this.showOutcome(outcome);
         });
-
-        // Update UI
-        this.updateUI();
 
         this.gameState.scenarioCount++;
 
@@ -2442,7 +2645,36 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         });
 
         // Key insights section
-        const insightsY = modalY + modalHeight - 160;
+        const insightsY = modalY + modalHeight - 200;
+        
+        // Professional Reputation section
+        const reputationY = insightsY - 80;
+        const reputationTitle = this.add.text(modalX + 20, reputationY, 'Professional Reputation:', {
+            fontSize: '18px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: '#f39c12',
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        analyticsModal.add(reputationTitle);
+        
+        // Calculate total reputation change for the day from trades
+        const dailyRepChange = this.gameState.dailyTrades.reduce((sum, trade) => sum + (trade.reputationChange || 0), 0);
+        const repGainColor = dailyRepChange >= 0 ? '#2ecc71' : '#e74c3c';
+        const repSignPrefix = dailyRepChange >= 0 ? '+' : '';
+        
+        const currentReputation = this.gameState.reputationScore;
+        const repColor = currentReputation >= 70 ? '#2ecc71' : currentReputation >= 50 ? '#f39c12' : '#e74c3c';
+        const reputationText = this.add.text(modalX + 20, reputationY + 25, 
+            `Current Score: ${currentReputation}   ${repSignPrefix}${dailyRepChange}`, {
+            fontSize: '16px',
+            fontFamily: 'Minecraft, Courier New, monospace',
+            color: repColor,
+            stroke: '#000000',
+            strokeThickness: 1
+        });
+        analyticsModal.add(reputationText);
+
         const insightsTitle = this.add.text(modalX + 20, insightsY, 'Key Insights:', {
             fontSize: '18px',
             fontFamily: 'Minecraft, Courier New, monospace',
@@ -2554,108 +2786,30 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
     }
 
     startNextDay() {
-        // Check if game is complete
+        // Start new day
+        this.gameState.startNewDay();
+        
+        // Check if game is complete after incrementing day
         if (this.gameState.isGameComplete()) {
             this.endGame();
             return;
         }
-
-        // Start new day
-        this.gameState.startNewDay();
         
         // Reset daily analytics for new day
         this.dailyAnalytics = [];
         
         this.updateUI();
-        this.startNewDay();
+        this.showDayStartModal();
     }
 
     endGame() {
-        // Show final score screen
-        const finalSummary = this.gameState.getFinalSummary();
-
-        // Create final score modal container
-        const finalModal = this.add.container(0, 0);
-        finalModal.setDepth(200);
-
-        // Modal background - make interactive to block clicks
-        const modalBg = this.add.graphics();
-        modalBg.fillStyle(0x000000, 0.8);
-        modalBg.fillRect(0, 0, 1024, 768);
-        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
-        finalModal.add(modalBg);
-
-        // Modal content
-        const modalWidth = 500;
-        const modalHeight = 400;
-        const modalX = (1024 - modalWidth) / 2;
-        const modalY = (768 - modalHeight) / 2;
-
-        const modalContent = this.add.graphics();
-        modalContent.fillStyle(0x333333, 0.95);
-        modalContent.lineStyle(2, 0xffffff, 1);
-        modalContent.fillRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
-        modalContent.strokeRoundedRect(modalX, modalY, modalWidth, modalHeight, 10);
-        finalModal.add(modalContent);
-
-        // Title
-        const titleText = this.add.text(512, modalY + 60, 'Game Complete!', {
-            fontSize: '24px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2
-        }).setOrigin(0.5);
-        finalModal.add(titleText);
-
-        // Final summary
-        const finalText = this.add.text(512, modalY + 120,
-            `Final Reputation: ${finalSummary.finalReputation}\n` +
-            `Total Trades: ${finalSummary.totalTrades}\n` +
-            `Successful Trades: ${finalSummary.successfulTrades}`, {
-            fontSize: '18px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 1,
-            align: 'center'
-        }).setOrigin(0.5);
-        finalModal.add(finalText);
-
-        // Restart button
-        const restartButton = this.add.rectangle(512, modalY + 280, 120, 40, 0x00ff00);
-        restartButton.setInteractive();
-        restartButton.on('pointerdown', () => {
-            this.scene.restart();
-        });
-        finalModal.add(restartButton);
-
-        const restartButtonText = this.add.text(512, modalY + 280, 'Restart', {
-            fontSize: '18px',
-            color: '#000000',
-            stroke: '#ffffff',
-            strokeThickness: 1
-        }).setOrigin(0.5);
-        finalModal.add(restartButtonText);
-
-        // Add hover effect to restart button
-        restartButton.on('pointerover', () => {
-            this.tweens.add({
-                targets: [restartButton, restartButtonText],
-                x: '-=2',
-                y: '+=2',
-                duration: 100,
-                ease: 'Power2'
-            });
-        });
-
-        restartButton.on('pointerout', () => {
-            this.tweens.add({
-                targets: [restartButton, restartButtonText],
-                x: '+=2',
-                y: '-=2',
-                duration: 100,
-                ease: 'Power2'
-            });
-        });
+        // Determine if player should be promoted or fired based on reputation
+        // Promoted if reputation >= 70, fired otherwise
+        const finalReputation = this.gameState.reputationScore;
+        const isVictory = finalReputation >= 70;
+        
+        // Transition to GameOver scene with outcome data
+        this.scene.start('GameOver', { victory: isVictory, reputation: finalReputation });
     }
 
     updateUI() {

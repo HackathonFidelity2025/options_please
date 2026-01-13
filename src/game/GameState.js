@@ -1,9 +1,9 @@
 // Game State Management System
 export class GameState {
     constructor() {
-        this.reputationScore = 50; // Starting reputation (0-100)
+        this.reputationScore = 70; // Starting reputation (0-100)
         this.currentDay = 1;
-        this.totalDays = 5; // Total days in the game
+        this.totalDays = 3; // Total days in the game
         this.currentClient = null;
         this.clientsCompleted = 0;
         this.totalClients = 3; // Clients per day
@@ -16,7 +16,7 @@ export class GameState {
 
     // Initialize game state
     initialize() {
-        this.reputationScore = 50;
+        this.reputationScore = 70;
         this.currentDay = 1;
         this.currentClient = null;
         this.clientsCompleted = 0;

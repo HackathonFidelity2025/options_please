@@ -12,7 +12,6 @@ export class GameOver extends Scene
     {
         // Determine if this is a victory or defeat
         this.isVictory = data && data.victory === true;
-        this.isVictory = true;
         
         // Start with trading floor ambience, then fade to silence
         this.sound.stopAll();
@@ -56,7 +55,7 @@ export class GameOver extends Scene
         this.currentText = this.add.text(512, 350, '', {
             fontFamily: 'Courier New, monospace',
             fontSize: 26,
-            color: this.isVictory ? '#00ff00' : '#ffffff', // Green for victory
+            color: '#00ff00', // Green for both victory and defeat
             align: 'center',
             wordWrap: { width: 800 }
         }).setOrigin(0.5).setDepth(10);
@@ -71,7 +70,7 @@ export class GameOver extends Scene
         this.nextButtonText = this.add.text(512, 500, 'CONTINUE', {
             fontFamily: 'Courier New, monospace',
             fontSize: 18,
-            color: this.isVictory ? '#00ff00' : '#ffffff',
+            color: '#00ff00',
             align: 'center'
         }).setOrigin(0.5).setDepth(21);
         this.nextButtonText.setVisible(false);
@@ -284,8 +283,15 @@ export class GameOver extends Scene
             'For educational purposes only.',
             '',
             '',
-            'GAME DESIGN',
-            'Joe Ampfer, Landen Tomlin, Tyler Elgof',
+            'LEAD GAME/ASSET DESIGN',
+            'Landen Tomlin',
+            'ASSISTANT GAME/ASSET DESIGN',
+            'Tyler Egloff, Joeseph Ampfer, Tanner Andrews, Braden Dennison',
+            '',
+            'LEAD PROGRAMMERS',
+            'Joeseph Ampfer, Tyler Egloff',
+            'ASSISTANT PROGRAMMERS',
+            'Landen Tomlin',
             '',
             'POWERED BY',
             'Phaser.js',
