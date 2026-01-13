@@ -75,18 +75,19 @@ function App ()
             <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
             <div>
                 <div>
-                    <button className="button" onClick={changeScene}>Change Scene</button>
+                    <div className="" onClick={changeScene}></div>
                 </div>
                 <div>
-                    <button disabled={canMoveSprite} className="button" onClick={moveSprite}>Toggle Movement</button>
+    
                 </div>
-                <div className="spritePosition minecraft-font">Sprite Position:
-                    <pre className="minecraft-text">{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
+                <div className="spritePosition minecraft-font">
+                    
                 </div>
                 <div>
-                    <button className="button" onClick={addSprite}>Add New Sprite</button>
+                    <button className="button" onClick={addSprite}></button>
                 </div>
             </div>
+
         </div>
     )
 }

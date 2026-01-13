@@ -21,7 +21,7 @@ export class Intro extends Scene {
             "Decide whether to CALL, PUT, or HOLD.",
             "Be vigilant.",
             "A poor recommendation risks not only your client's trust,",
-            "but the stability of the entire desk.",
+            "but the stability of the entire Desk.",
             "The clients are waiting.",
             "Options, Please."
         ];
@@ -158,6 +158,8 @@ export class Intro extends Scene {
     }
 
     showLogo() {
+        // theme song
+        this.sound.play('intro', { loop: true });
         // Hide the text and next button
         this.currentText.setVisible(false);
         this.hideNextButton();
