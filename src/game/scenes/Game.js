@@ -163,7 +163,7 @@ export class Game extends Scene {
         this.scenarioManager = new ScenarioManager(this);
 
         // Set up the main game background
-        this.add.image(512, 384, 'background3').setDisplaySize(1024, 768);
+        this.add.image(this.scale.width / 2, this.scale.height / 2, 'background3').setDisplaySize(this.scale.width, this.scale.height);
 
         // Create background animation layers
         this.createBackgroundLayers();
@@ -632,11 +632,11 @@ export class Game extends Scene {
 
     createDeskElements() {
         // Create interactive desk elements with paired labels
-        this.createInteractiveElement('phone', 805, 545, 140, 110, 0x8B4513, 'Phone', () => this.showWordOfMouthClue());
-        this.createInteractiveElement('computer', 585, 425, 220, 200, 0x000000, 'Computer', () => this.showComputerClue());
-        this.createInteractiveElement('newspaper', 150, 590, 150, 160, 0xFFFFFF, 'News', () => this.showNewspaperClue());
-        this.createInteractiveElement('keyboard', 520, 610, 340, 100, 0x333333, 'Recommend', () => this.showDecisionModal());
-        this.createInteractiveElement('binders', 650, 210, 125, 110, 0x000000, 'Client Files', () => this.showClientFiles());
+        this.createInteractiveElement('phone', this.scale.width * 805 / 1024, this.scale.height * 545 / 768, this.scale.width * 140 / 1024, this.scale.height * 110 / 768, 0x8B4513, 'Phone', () => this.showWordOfMouthClue());
+        this.createInteractiveElement('computer', this.scale.width * 585 / 1024, this.scale.height * 425 / 768, this.scale.width * 220 / 1024, this.scale.height * 200 / 768, 0x000000, 'Computer', () => this.showComputerClue());
+        this.createInteractiveElement('newspaper', this.scale.width * 150 / 1024, this.scale.height * 590 / 768, this.scale.width * 150 / 1024, this.scale.height * 160 / 768, 0xFFFFFF, 'News', () => this.showNewspaperClue());
+        this.createInteractiveElement('keyboard', this.scale.width * 520 / 1024, this.scale.height * 610 / 768, this.scale.width * 340 / 1024, this.scale.height * 100 / 768, 0x333333, 'Recommend', () => this.showDecisionModal());
+        this.createInteractiveElement('binders', this.scale.width * 650 / 1024, this.scale.height * 210 / 768, this.scale.width * 125 / 1024, this.scale.height * 110 / 768, 0x000000, 'Client Files', () => this.showClientFiles());
     }
 
     createInteractiveElement(key, x, y, width, height, color, labelText, onClick) {
@@ -967,24 +967,24 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         // Modal background
         const modalBg = this.add.graphics();
         modalBg.fillStyle(0x000000, 0.8);
-        modalBg.fillRect(0, 0, 1024, 768);
-        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, 1024, 768), Phaser.Geom.Rectangle.Contains);
+        modalBg.fillRect(0, 0, this.scale.width, this.scale.height);
+        modalBg.setInteractive(new Phaser.Geom.Rectangle(0, 0, this.scale.width, this.scale.height), Phaser.Geom.Rectangle.Contains);
         this.guidebookModal.add(modalBg);
 
         // Modal content - use handbook page image as background
-        const modalWidth = 700;
-        const modalHeight = 800;
-        const modalX = (1024 - modalWidth) / 2;
-        const modalY = (768 - modalHeight) / 2;
+        const modalWidth = Math.min(700, this.scale.width * 0.8);
+        const modalHeight = Math.min(800, this.scale.height * 0.9);
+        const modalX = (this.scale.width - modalWidth) / 2;
+        const modalY = (this.scale.height - modalHeight) / 2;
 
         // Create handbook page background image
-        const handbookPage = this.add.image(512, 384, 'handbook-page');
+        const handbookPage = this.add.image(this.scale.width / 2, this.scale.height / 2, 'handbook-page');
         handbookPage.setDisplaySize(modalWidth, modalHeight);
         this.guidebookModal.add(handbookPage);
 
         // Title - positioned to overlay nicely on the handbook page
         const currentPage = this.guidebookPages[this.currentGuidebookPage];
-        const titleText = this.add.text(545, modalY + 85, currentPage.title, {
+        const titleText = this.add.text(this.scale.width / 2, modalY + 85, currentPage.title, {
             fontSize: '28px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#2c3e50', // Dark blue-gray for better contrast on paper
@@ -994,7 +994,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(titleText);
 
         // Content - positioned in the main content area of the handbook page
-        const contentText = this.add.text(530, modalY + 340, currentPage.content, {
+        const contentText = this.add.text(this.scale.width / 2, modalY + 340, currentPage.content, {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#2c3e50', // Dark blue-gray for better readability on paper
@@ -1012,7 +1012,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         }
 
         // Close button - styled to match the handbook page aesthetic
-        const closeButton = this.add.rectangle(530, modalY + 720, 120, 40, 0x8B4513); // Brown paper color
+        const closeButton = this.add.rectangle(this.scale.width / 2, modalY + 720, 120, 40, 0x8B4513); // Brown paper color
         closeButton.setStrokeStyle(2, 0x654321); // Darker brown border
         closeButton.setInteractive();
         closeButton.on('pointerdown', () => this.hideGuidebookModal());
@@ -1066,7 +1066,7 @@ Key Insight: Reputation is not built overnight. Each client interaction contribu
         this.guidebookModal.add(prevButtonText);
 
         // Page indicator - styled for handbook page
-        const pageIndicator = this.add.text(530, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
+        const pageIndicator = this.add.text(this.scale.width / 2, buttonY, `${this.currentGuidebookPage + 1} / ${this.guidebookPages.length}`, {
             fontSize: '16px',
             fontFamily: 'Minecraft, Courier New, monospace',
             color: '#2c3e50', // Dark text for paper background
