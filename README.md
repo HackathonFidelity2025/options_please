@@ -4,11 +4,15 @@ A clue-based deduction game where you play as a financial advisor. Analyze marke
 
 Each day you'll evaluate multiple clients based on the evidence they bring to your desk. Your recommendations will be judged on accuracy and performance, with feedback provided at the end of each day to track your advisory success.
 
+![In-game screenshot](In-game.png)
+
 ## About
 
 Won first place at the 2025 NKU-Fidelity 24-hackathon. Users were prompted to build any product that teaches stock options to users. 
 
-Check out a blog post sharing more about our development process [HERE](https://www.tyleregloff.com/blog.html?post=hackathon.md)
+Play the game [HERE](https://hackathonfidelity2025.github.io/options_please/)
+
+Or check out a blog post sharing more about our development process [HERE](https://www.tyleregloff.com/blog.html?post=hackathon.md)
 
 Also, see the half-baked documentation that we constructed mid-hackathon to help guide GPT-4.0 to build the backbone of our app [HERE](https://github.com/HackathonFidelity2025/Documentation)
 
